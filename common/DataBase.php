@@ -40,41 +40,100 @@
 		private $table;
 		private $query;
 		private $where;
+		private $order;
+		private $limit;
 
 		function __construct($table) {
+
 			$this->table = $table;
 		}
 
 		function SQL() {
-			return $this->query. $this->where;
+
+			return
+			$this->query.
+			$this->where.
+			$this->order.
+			$this->limit;
 		}
 
 
 
-		function where($key, $value) {
-			$this->where = " WHERE $key = '$value'";
+
+
+
+
+
+
+
+		function where($key, $value, $where = 'WHERE') {
+
+			$this->where .= " $where $key = '$value'";
+			return $this;
+		}
+
+		function and($key, $value) {
+
+			return $this->where($key, $value, 'AND');
+		}
+
+		function or($key, $value) {
+
+			return $this->where($key, $value, 'OR');
+		}
+
+		function limit($begin, $end = null) {
+
+			$this->limit = " LIMIT ". (empty($end) ? "$begin" : "$begin, $end");
+			return $this;
+		}
+
+		function order($key, $sort = null) {
+
+			$this->order = " ORDER BY $key ". ($sort ? 'DESC' : 'ASC');
 			return $this;
 		}
 
 
+
+
+
+
+
+
+
+
+		function query($SQL) {
+
+			global $db;
+			return $db->query($SQL);
+		}
 
 		function get(...$column) {
 
 			$column = $column ? implode(', ', $column) : '*';
 			$this->query = "SELECT $column FROM $this->table";
 
+			// echo '<br>'. $this->SQL(); // Debug
+
 			global $db;
 			return $db->query( $this->SQL() )->fetch();
 		}
+
+		function each($function) {
+
+			$this->query = "SELECT * FROM $this->table";
+
+			// $result = $this->query($this->SQL());
+			// while($row = $result->fetch()) { $function($row); }
+
+			// echo '<br>'. $this->SQL(); // Debug
+
+			foreach($this->query($this->SQL())->fetchAll() as $row) {
+				$function($row);
+			}
+		}
 	}
-
-	$user = DB('user')
-	->where('id', 1)
-	->get();
-
-	echo $user->name;
-
-	// DB::QUERY("INSERT INTO user (login, password) VALUES ('Пользователь', 'qweqwe')");
 
 
 
