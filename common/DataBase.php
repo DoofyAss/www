@@ -1,19 +1,5 @@
 ﻿<?php
 
-	// error_reporting(0);
-
-	header('Content-type: text/html; charset=utf-8');
-	date_default_timezone_set('Etc/GMT-11');
-
-
-
-
-
-
-
-
-
-
 	$db = new PDO('mysql:host=127.0.0.1;dbname=data', 'root', null, array(
 		PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
 		PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
@@ -57,6 +43,28 @@
 			$this->limit;
 		}
 
+		function type($value) {
+
+			switch (gettype($value)) {
+
+				case 'integer':
+					return $value;
+				break;
+
+				case 'string':
+					return "'$value'";
+				break;
+
+				case 'NULL':
+					return 'NULL';
+				break;
+
+				case 'boolean':
+					return $value ? 'true' : 'false';
+				break;
+			}
+		}
+
 
 
 
@@ -68,7 +76,7 @@
 
 		function where($key, $value, $where = 'WHERE') {
 
-			$this->where .= " $where $key = '$value'";
+			$this->where .= " $where $key = ". $this->type($value);
 			return $this;
 		}
 
@@ -129,9 +137,19 @@
 
 			// echo '<br>'. $this->SQL(); // Debug
 
-			foreach($this->query($this->SQL())->fetchAll() as $row) {
+			foreach($this->query( $this->SQL() )->fetchAll() as $row) {
 				$function($row);
 			}
+		}
+
+		function update() {
+
+			$this->set = "name = 'User', login = 'user'";
+			$this->query = "UPDATE $this->table SET $this->set";
+			// $this->query( $this->SQL() );
+			// echo gettype(func_get_arg(0));
+
+			echo "<br>". $this->SQL();
 		}
 	}
 
