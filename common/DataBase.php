@@ -76,7 +76,10 @@
 
 		function where($key, $value, $where = 'WHERE') {
 
-			$this->where .= " $where $key = ". $this->type($value);
+			$this->where .= " $where $key".
+			(gettype($value) == 'NULL' ? ' IS ' : ' = ').
+			$this->type($value);
+
 			return $this;
 		}
 
@@ -122,8 +125,6 @@
 			$column = $column ? implode(', ', $column) : '*';
 			$this->query = "SELECT $column FROM $this->table";
 
-			// echo '<br>'. $this->SQL(); // Debug
-
 			global $db;
 			return $db->query( $this->SQL() )->fetch();
 		}
@@ -132,24 +133,35 @@
 
 			$this->query = "SELECT * FROM $this->table";
 
-			// $result = $this->query($this->SQL());
-			// while($row = $result->fetch()) { $function($row); }
-
-			// echo '<br>'. $this->SQL(); // Debug
-
-			foreach($this->query( $this->SQL() )->fetchAll() as $row) {
+			foreach ($this->query( $this->SQL() )->fetchAll() as $row) {
 				$function($row);
 			}
 		}
 
 		function update() {
 
-			$this->set = "name = 'User', login = 'user'";
-			$this->query = "UPDATE $this->table SET $this->set";
-			// $this->query( $this->SQL() );
-			// echo gettype(func_get_arg(0));
+			if (gettype(func_get_arg(0)) == 'string') {
 
-			echo "<br>". $this->SQL();
+				$this->set = func_get_arg(0). " = ".
+				$this->type( func_get_arg(1) );
+			}
+
+			if (gettype(func_get_arg(0)) == 'array') {
+
+				$map = function ($key, $value) {
+					return "$key = ". $this->type($value);
+				};
+
+				$this->set = implode(', ', array_map($map,
+					array_keys( func_get_arg(0) ), func_get_arg(0))
+				);
+			}
+
+			$this->query = "UPDATE $this->table SET $this->set";
+			// echo "<br>". $this->SQL(); // debug
+
+			$this->query( $this->SQL() );
+			return $this;
 		}
 	}
 
