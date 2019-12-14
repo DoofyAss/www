@@ -16,9 +16,17 @@
 
 
 
-	function DB($table) {
+	function DB($table, ...$arg) {
 
-		return new DB($table);
+		return
+
+		count($arg) == 2 ?
+		(new DB($table))->where($arg[0], $arg[1])->get() :
+
+		(
+			count($arg) == 1 ?
+			(new DB($table))->where('id', $arg[0])->get() : new DB($table)
+		);
 	}
 
 	class DB {
@@ -76,6 +84,8 @@
 
 		function where($key, $value, $where = 'WHERE') {
 
+			if ($where == 'WHERE') $this->where = null;
+
 			$this->where .= " $where $key".
 			(gettype($value) == 'NULL' ? ' IS ' : ' = ').
 			$this->type($value);
@@ -114,7 +124,7 @@
 
 
 
-		function query($SQL) {
+		static function query($SQL) {
 
 			global $db;
 			return $db->query($SQL);
@@ -124,6 +134,8 @@
 
 			$column = $column ? implode(', ', $column) : '*';
 			$this->query = "SELECT $column FROM $this->table";
+
+			echo "<br>". $this->SQL(); // debug
 
 			global $db;
 			return $db->query( $this->SQL() )->fetch();
@@ -180,7 +192,7 @@
 
 		static function USER() {
 
-			SELF::QUERY("
+			SELF::query("
 				CREATE TABLE IF NOT EXISTS user (
 					id INT(16) NOT NULL AUTO_INCREMENT,
 					login VARCHAR(64) NOT NULL,
