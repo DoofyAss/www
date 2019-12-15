@@ -130,16 +130,24 @@
 			return $db->query($SQL);
 		}
 
+
+
+
+
 		function get(...$column) {
 
 			$column = $column ? implode(', ', $column) : '*';
 			$this->query = "SELECT $column FROM $this->table";
 
-			echo "<br>". $this->SQL(); // debug
+			// echo "<br>". $this->SQL(); // debug
 
 			global $db;
 			return $db->query( $this->SQL() )->fetch();
 		}
+
+
+
+
 
 		function each($function) {
 
@@ -149,6 +157,10 @@
 				$function($row);
 			}
 		}
+
+
+
+
 
 		function update() {
 
@@ -170,6 +182,7 @@
 			}
 
 			$this->query = "UPDATE $this->table SET $this->set";
+
 			// echo "<br>". $this->SQL(); // debug
 
 			$this->query( $this->SQL() );

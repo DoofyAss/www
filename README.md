@@ -4,11 +4,6 @@
 ## <sub>SELECT</sub>
 
 ```php
-->get();			// SELECT *
-->get('name', 'login');		// SELECT name, login
-```
-
-```php
 $user = DB('user')
 ->where('id', 1)
 ->get();				// SELECT *
