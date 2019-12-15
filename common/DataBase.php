@@ -21,11 +21,11 @@
 		return
 
 		count($arg) == 2 ?
-		(new DB($table))->where($arg[0], $arg[1])->get() :
+		(new DB($table))->where($arg[0], $arg[1]) :
 
 		(
 			count($arg) == 1 ?
-			(new DB($table))->where('id', $arg[0])->get() : new DB($table)
+			(new DB($table))->where('id', $arg[0]) : new DB($table)
 		);
 	}
 
@@ -93,6 +93,12 @@
 			return $this;
 		}
 
+		function like($key, $value) {
+
+			$this->where = " WHERE $key LIKE '%$value%'";
+			return $this;
+		}
+
 		function and($key, $value) {
 
 			return $this->where($key, $value, 'AND');
@@ -134,15 +140,16 @@
 
 
 
-		function get(...$column) {
+		function get(...$arg) {
 
-			$column = $column ? implode(', ', $column) : '*';
+			$column = $arg ? implode(', ', $arg) : '*';
 			$this->query = "SELECT $column FROM $this->table";
 
-			// echo "<br>". $this->SQL(); // debug
+			// echo '<br>'. $this->SQL(); // debug
 
 			global $db;
-			return $db->query( $this->SQL() )->fetch();
+			$result = $db->query( $this->SQL() )->fetch();
+			return count($arg) == 1 ? $result->$column : $result;
 		}
 
 
@@ -152,6 +159,8 @@
 		function each($function) {
 
 			$this->query = "SELECT * FROM $this->table";
+
+			// echo '<br>'. $this->SQL(); // debug
 
 			foreach ($this->query( $this->SQL() )->fetchAll() as $row) {
 				$function($row);
@@ -183,11 +192,32 @@
 
 			$this->query = "UPDATE $this->table SET $this->set";
 
-			// echo "<br>". $this->SQL(); // debug
+			// echo '<br>'. $this->SQL(); // debug
 
-			$this->query( $this->SQL() );
-			return $this;
+			return $this->query( $this->SQL() );
 		}
+
+
+
+
+
+		function insert($data) {
+
+			foreach($data as $key => $value) {
+
+				$data[$key] = $this->type($value);
+			}
+
+			$column = implode(', ', array_keys($data));
+			$values = implode(', ', array_values($data));
+
+			$this->query = "INSERT INTO $this->table ($column) VALUES ($values)";
+
+			// echo '<br>'. $this->SQL(); // debug
+
+			return $this->query( $this->SQL() );
+		}
+
 	}
 
 
