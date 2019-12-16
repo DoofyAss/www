@@ -218,6 +218,22 @@
 			return $this->query( $this->SQL() );
 		}
 
+
+
+
+
+		function delete() {
+
+			$this->query = "DELETE FROM $this->table";
+
+			$result = $this->query( $this->SQL() );
+
+			$this->query("ALTER TABLE $this->table AUTO_INCREMENT = 1;");
+
+			// echo '<br>'. $this->SQL(); // debug
+
+			return $result;
+		}
 	}
 
 

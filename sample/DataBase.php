@@ -6,13 +6,13 @@
 	*/
 
 	// SELECT * FROM user WHERE id = 1
-	$user = DB('user', 1)->get();				// stdClass (*)
+	$user = DB('user', 1)->get();			// stdClass (*)
 
 	$user = DB('user', 1)->get('id', 'name');	// stdClass (id, name)
 	echo $user->id;
 	echo $user->name;
 
-	echo DB('user', 1)->get('name');			// string
+	echo DB('user', 1)->get('name');		// string
 
 	// SELECT * FROM user WHERE id = 1
 	$user = DB('user')
@@ -97,9 +97,31 @@
 
 	// INSERT INTO user (login, password) VALUES ('user', 'PaSSwoRD')
 	$data = [
-		'login' => 'user',						// column => value
+		// column => value,
+		'login' => 'user',
 		'password' => 'PaSSwoRD'
 	];
 
 	DB('user')->insert($data);
+
+
+
+
+
+
+
+
+
+
+	/*
+		DELETE
+	*/
+
+	// DELETE FROM user WHERE id = 1
+	DB('user', 1)->delete();
+
+	// DELETE FROM user WHERE login LIKE '%user%'
+	DB('user')
+	->like('login', 'user')
+	->delete();
 ?>
