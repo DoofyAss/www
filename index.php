@@ -5,7 +5,8 @@
 
 
 
-	DB('user')->each(function ($user) {
+	/*DB('user')->each(function ($user) {
 		echo '<br>'. $user->login;
-	});
+	});*/
+
 ?>
