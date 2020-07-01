@@ -124,4 +124,27 @@
 	DB('user')
 	->like('login', 'user')
 	->delete();
+
+
+
+
+
+
+
+
+
+
+	/*
+		ERROR
+	*/
+
+	DB('nonexistent')
+
+	->error(function ($message) {
+		echo $message; // Base table or view not found
+	})
+
+	->each(function ($user) {
+		echo '<br>'. $user->login;
+	});
 ?>

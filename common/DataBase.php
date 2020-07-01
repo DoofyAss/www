@@ -37,6 +37,8 @@
 		private $order;
 		private $limit;
 
+		private $error;
+
 		function __construct($table) {
 
 			$this->table = $table;
@@ -71,6 +73,46 @@
 					return $value ? 'true' : 'false';
 				break;
 			}
+		}
+
+
+
+
+
+
+
+
+
+
+		function error($function) {
+
+			$this->error = $function;
+			return $this;
+		}
+
+
+
+
+
+
+
+
+
+
+		function query($SQL) {
+
+			global $db;
+
+			try {
+
+				return $db->query($SQL);
+
+			} catch (PDOException $e) {
+
+				!isset($this->error) ? exit :
+				exit (call_user_func ($this->error, $e->getMessage()));
+			}
+
 		}
 
 
@@ -130,16 +172,6 @@
 
 
 
-		static function query($SQL) {
-
-			global $db;
-			return $db->query($SQL);
-		}
-
-
-
-
-
 		function get(...$arg) {
 
 			$column = $arg ? implode(', ', $arg) : '*';
@@ -156,6 +188,11 @@
 
 
 
+
+
+
+
+
 		function each($function) {
 
 			$this->query = "SELECT * FROM $this->table";
@@ -165,7 +202,14 @@
 			foreach ($this->query( $this->SQL() )->fetchAll() as $row) {
 				$function($row);
 			}
+
+			return $this;
 		}
+
+
+
+
+
 
 
 
@@ -201,6 +245,11 @@
 
 
 
+
+
+
+
+
 		function insert($data) {
 
 			foreach($data as $key => $value) {
@@ -217,6 +266,11 @@
 
 			return $this->query( $this->SQL() );
 		}
+
+
+
+
+
 
 
 
