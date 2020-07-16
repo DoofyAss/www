@@ -7,4 +7,27 @@
 
 	set_include_path($_SERVER['DOCUMENT_ROOT'].PATH_SEPARATOR);
 	include_once 'common/DataBase.php';
+
+
+
+
+
+
+
+
+
+
+	/*
+		COOKIE
+	*/
+
+	function cookie($key, $value = null) {
+
+		$time = isset($value) ? time() + 86400 : -1; // 24h
+
+		return func_num_args() > 1 ?
+
+		setcookie($key, $value, $time, '/') :
+		(isset($_COOKIE[$key]) ? $_COOKIE[$key] : null);
+	}
 ?>
