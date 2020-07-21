@@ -6,7 +6,8 @@
 	date_default_timezone_set('Etc/GMT-11');
 
 	set_include_path($_SERVER['DOCUMENT_ROOT'].PATH_SEPARATOR);
-	include_once 'common/DataBase.php';
+	include_once 'DataBase.php';
+	include_once 'User.php';
 
 
 
@@ -28,6 +29,6 @@
 		return func_num_args() > 1 ?
 
 		setcookie($key, $value, $time, '/') :
-		(isset($_COOKIE[$key]) ? $_COOKIE[$key] : null);
+		($_COOKIE[$key] ?? null);
 	}
 ?>

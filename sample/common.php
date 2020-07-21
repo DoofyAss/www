@@ -4,8 +4,13 @@
 		COOKIE
 	*/
 
-	cookie('key');			// get
-	cookie('key', 'value');	// set
-	cookie('key', null);	// remove
+	// get
+	cookie('key');
+
+	// set
+	cookie('key', 'value');
+
+	// remove
+	cookie('key', null);
 
 ?>

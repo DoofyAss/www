@@ -1,7 +1,7 @@
 ﻿<?php
 
 	set_include_path($_SERVER['DOCUMENT_ROOT'].PATH_SEPARATOR);
-	include_once 'common.php';
+	include_once 'common/index.php';
 
 	http_response_code(404);
 
