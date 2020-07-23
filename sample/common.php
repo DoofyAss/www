@@ -13,4 +13,19 @@
 	// remove
 	cookie('key', null);
 
+
+
+
+
+
+
+
+
+
+	/*
+		Crypt
+	*/
+
+	$password = secret('paSSword');
+
 ?>

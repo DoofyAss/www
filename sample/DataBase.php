@@ -135,6 +135,28 @@
 
 
 	/*
+		CREATE / DROP
+	*/
+
+	DB('user')
+		->id() // auto_increment primary key
+		->int('column1') // integer
+		->var('column2') // varchar
+		->str('column3') // text
+	->create();
+
+	DB('user')->drop(); // drop table
+
+
+
+
+
+
+
+
+
+
+	/*
 		ERROR
 	*/
 

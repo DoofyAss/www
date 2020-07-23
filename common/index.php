@@ -31,4 +31,28 @@
 		setcookie($key, $value, $time, '/') :
 		($_COOKIE[$key] ?? null);
 	}
+
+
+
+
+
+
+
+
+
+
+	/*
+		list Public variables
+	*/
+
+	function listPublic($class, $function) {
+
+		$class = new ReflectionClass($class);
+
+		$props = array_map(function($array) {
+			return $array->name;
+		}, $class->getProperties(ReflectionProperty::IS_PUBLIC));
+
+		foreach ($props as $key) { $function($key); }
+	}
 ?>

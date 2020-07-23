@@ -1,11 +1,12 @@
-﻿<?php
+<?php
 
 	$db = new PDO('mysql:host=127.0.0.1;dbname=data', 'root', null, array(
 		PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
-		PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+		PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+		PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES UTF8"
 	));
 
-	$db->exec("SET NAMES utf8");
+	// $db->exec("SET NAMES UTF8");
 
 
 
@@ -29,6 +30,15 @@
 		);
 	}
 
+
+
+
+
+
+
+
+
+
 	class DB {
 
 		private $table;
@@ -38,6 +48,7 @@
 		private $limit;
 
 		private $error;
+		private $create;
 
 		function __construct($table) {
 
@@ -288,7 +299,6 @@
 
 			return $result;
 		}
-	}
 
 
 
@@ -298,25 +308,62 @@
 
 
 
+		function id() {
 
-	// INIT::USER();
+			$this->create = "id INT(16) NOT NULL AUTO_INCREMENT, ";
+			return $this;
+		}
 
-	class INIT extends DB {
 
-		static function USER() {
 
-			SELF::query("
-				CREATE TABLE IF NOT EXISTS user (
-					id INT(16) NOT NULL AUTO_INCREMENT,
-					login VARCHAR(64) NOT NULL,
-					password VARCHAR(64) NOT NULL,
-					mail VARCHAR(64),
-					name VARCHAR(64),
+		function int($column, ...$null) {
 
-					permission INT(1) DEFAULT NULL,
-					token VARCHAR(64) DEFAULT NULL,
-				PRIMARY KEY (`id`)) ENGINE = MyISAM;
-			");
+			$null = func_num_args() > 1 ? 'DEFAULT NULL' : 'NOT NULL';
+
+			$this->create .= "{$column} INT(16) {$null}, ";
+			return $this;
+		}
+
+
+
+		function var($column, ...$null) {
+
+			$null = func_num_args() > 1 ? 'DEFAULT NULL' : 'NOT NULL';
+
+			$this->create .=
+				"{$column} VARCHAR(128) {$null} COLLATE utf8_general_ci, ";
+			return $this;
+		}
+
+
+
+		function str($column, ...$null) {
+
+			$null = func_num_args() > 1 ? 'DEFAULT NULL' : 'NOT NULL';
+
+			$this->create .=
+				"{$column} TEXT {$null} COLLATE utf8_general_ci, ";
+			return $this;
+		}
+
+
+
+		function create() {
+
+			$this->create =
+
+			"CREATE TABLE {$this->table} (
+				{$this->create}
+			PRIMARY KEY (`id`)) ENGINE = MyISAM;";
+
+			return $this->query($this->create);
+		}
+
+
+
+		function drop() {
+
+			return $this->query("DROP TABLE {$this->table}");
 		}
 	}
 
