@@ -143,6 +143,10 @@
 		->int('column1') // integer
 		->var('column2') // varchar
 		->str('column3') // text
+
+		->var('column4') // NOT NULL
+		->var('column5')->null() // DEFAULT NULL
+		->var('column6')->unique() // UNIQUE
 	->create();
 
 	DB('user')->drop(); // drop table

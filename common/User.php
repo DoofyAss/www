@@ -1,6 +1,5 @@
 <?php
 
-	// DB('user')->drop();
 	// USER::init();
 
 
@@ -65,24 +64,29 @@
 
 		static function init() {
 
+			DB('user')->drop();
+
+
+
 			DB('user')
 				->id()
-				->var('login')
+				->var('login')->unique()
 				->var('password')
 
-				->var('mail', null)
-				->var('name', null)
-				->int('permission', null)
-				->int('date', null)
+				->var('mail')->null()
+				->var('name')->null()
+				->int('permission')->null()
+				->int('date')->null()
 
-				->var('token', null)
+				->var('token')->null()
 			->create();
 
 
 
-			DB('user')->insert([
+			DB('user')
+			->insert([
 				'login' => 'Admin',
-				'password' => 'sakmadik',
+				'password' => secret('admin'),
 				'mail' => 'mr.black.developer@gmail.com',
 				'name' => 'Администратор',
 				'permission' => 1,

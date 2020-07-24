@@ -48,7 +48,6 @@
 		private $limit;
 
 		private $error;
-		private $create;
 
 		function __construct($table) {
 
@@ -120,8 +119,10 @@
 
 			} catch (PDOException $e) {
 
-				!isset($this->error) ? exit :
-				exit (call_user_func ($this->error, $e->getMessage()));
+				if (isset($this->error))
+				call_user_func ($this->error, $e->getMessage());
+
+				return false;
 			}
 
 		}
@@ -308,56 +309,98 @@
 
 
 
+
+		private $create = [];
+		private $column;
+
+		private $id;
+		private $null;
+		private $unique;
+		private $collate;
+		private $increment;
+
+
+
+		function column() {
+
+			if ($this->column) {
+
+				array_push($this->create,
+					$this->column.
+					($this->null ? ' DEFAULT NULL' : ' NOT NULL').
+					($this->unique ? ' UNIQUE' : '').
+					($this->collate ? ' COLLATE utf8_general_ci' : '').
+					($this->increment ? ' AUTO_INCREMENT' : '')
+				);
+			}
+
+			$this->null = false;
+			$this->unique = false;
+			$this->collate = false;
+			$this->increment = false;
+		}
+
+		function null() {
+
+			$this->null = true;
+			return $this;
+		}
+
+		function unique() {
+
+			$this->unique = true;
+			return $this;
+		}
+
 		function id() {
 
-			$this->create = "id INT(16) NOT NULL AUTO_INCREMENT, ";
+			$this->id = ", PRIMARY KEY (`id`)";
+			$this->column = "id INT(32)";
+			$this->increment = true;
 			return $this;
 		}
 
+		function int($column) {
 
-
-		function int($column, ...$null) {
-
-			$null = func_num_args() > 1 ? 'DEFAULT NULL' : 'NOT NULL';
-
-			$this->create .= "{$column} INT(16) {$null}, ";
+			$this->column();
+			$this->column = "{$column} INT(32)";
 			return $this;
 		}
 
+		function var($column) {
 
-
-		function var($column, ...$null) {
-
-			$null = func_num_args() > 1 ? 'DEFAULT NULL' : 'NOT NULL';
-
-			$this->create .=
-				"{$column} VARCHAR(128) {$null} COLLATE utf8_general_ci, ";
+			$this->column();
+			$this->collate = true;
+			$this->column = "{$column} VARCHAR(128)";
 			return $this;
 		}
 
+		function str($column) {
 
-
-		function str($column, ...$null) {
-
-			$null = func_num_args() > 1 ? 'DEFAULT NULL' : 'NOT NULL';
-
-			$this->create .=
-				"{$column} TEXT {$null} COLLATE utf8_general_ci, ";
+			$this->column();
+			$this->collate = true;
+			$this->column = "{$column} TEXT";
 			return $this;
 		}
-
-
 
 		function create() {
 
-			$this->create =
+			$this->column();
+			$this->create = implode($this->create, ",\n");
 
-			"CREATE TABLE {$this->table} (
-				{$this->create}
-			PRIMARY KEY (`id`)) ENGINE = MyISAM;";
-
-			return $this->query($this->create);
+			return $this->query("
+				CREATE TABLE {$this->table} (
+					{$this->create}
+				{$this->id}) ENGINE = MyISAM;
+			");
 		}
+
+
+
+
+
+
+
 
 
 

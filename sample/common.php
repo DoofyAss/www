@@ -26,6 +26,10 @@
 		Crypt
 	*/
 
-	$password = secret('paSSword');
+	// generate hash
+	$hash = secret('paSSword');
+
+	// string to hash match
+	echo secret('paSSword', $hash) ? 'valid' : 'invalid';
 
 ?>

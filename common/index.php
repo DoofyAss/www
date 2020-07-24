@@ -42,6 +42,29 @@
 
 
 	/*
+		Crypt
+	*/
+
+	function secret($string, $hash = null) {
+
+		$salt = 'sakmadik';
+
+		return $hash ?
+
+		password_verify($string. $salt, $hash) :
+		password_hash($string. $salt, CRYPT_SHA256);
+	}
+
+
+
+
+
+
+
+
+
+
+	/*
 		list Public variables
 	*/
 
