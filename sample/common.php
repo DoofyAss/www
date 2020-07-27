@@ -23,7 +23,7 @@
 
 
 	/*
-		Crypt
+		CRYPT
 	*/
 
 	// generate hash

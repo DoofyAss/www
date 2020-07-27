@@ -1,10 +1,10 @@
 <?php
 
-	$db = new PDO('mysql:host=127.0.0.1;dbname=data', 'root', null, array(
+	$db = new PDO('mysql:host=127.0.0.1;dbname=data', 'root', null, [
 		PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
 		PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 		PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES UTF8"
-	));
+	]);
 
 	// $db->exec("SET NAMES UTF8");
 
@@ -355,7 +355,7 @@
 		function id() {
 
 			$this->id = ", PRIMARY KEY (`id`)";
-			$this->column = "id INT(32)";
+			$this->column = "id INT(16)";
 			$this->increment = true;
 			return $this;
 		}
