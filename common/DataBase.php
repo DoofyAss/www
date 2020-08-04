@@ -171,7 +171,7 @@
 
 		function order($key, $sort = null) {
 
-			$this->order = " ORDER BY $key ". ($sort ? 'DESC' : 'ASC');
+			$this->order = " ORDER BY $key ". ($sort ? 'ASC' : 'DESC');
 			return $this;
 		}
 
@@ -205,14 +205,32 @@
 
 
 
+		function count() {
+
+			$this->query = "SELECT * FROM $this->table";
+
+			global $db;
+			return $db->query( $this->SQL() )->rowCount();
+		}
+
+
+
+
+
+
+
+
+
+
 		function each($function) {
 
 			$this->query = "SELECT * FROM $this->table";
 
 			// echo '<br>'. $this->SQL(); // debug
 
-			foreach ($this->query( $this->SQL() )->fetchAll() as $row) {
-				$function($row);
+			foreach ($this->query( $this->SQL() )->fetchAll() as $key => $row) {
+				// $function($row);
+				call_user_func ($function, $row, $key);
 			}
 
 			return $this;
@@ -288,12 +306,13 @@
 
 
 
-		function delete() {
+		function delete($alter = true) {
 
 			$this->query = "DELETE FROM $this->table";
 
 			$result = $this->query( $this->SQL() );
 
+			if ($alter)
 			$this->query("ALTER TABLE $this->table AUTO_INCREMENT = 1;");
 
 			// echo '<br>'. $this->SQL(); // debug
@@ -363,7 +382,7 @@
 		function int($column) {
 
 			$this->column();
-			$this->column = "{$column} INT(32)";
+			$this->column = "{$column} INT(16)";
 			return $this;
 		}
 

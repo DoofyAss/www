@@ -22,6 +22,9 @@
 	// SELECT * FROM user WHERE name = 'Admin'
 	$user = DB('user', 'name', 'Admin')->get();
 
+	// count rows
+	DB('user')->count();
+
 
 
 
@@ -36,14 +39,14 @@
 	*/
 
 	// SELECT * FROM user
-	DB('user')->each(function ($user) {
+	DB('user')->each(function ($user, $index) {
 		echo '<br>'. $user->name;
 	});
 
 	// SELECT * FROM user ORDER BY id DESC LIMIT 10
 	DB('user')
 	->limit(10) // (0, 10)
-	->order('id', true)
+	->order('id', true) // true: ASC, null: DESC
 	->each(function ($user) { ... });
 
 	// SELECT * FROM user WHERE name LIKE '%Us%'
@@ -118,7 +121,8 @@
 	*/
 
 	// DELETE FROM user WHERE id = 1
-	DB('user', 1)->delete();
+	DB('user', 1)->delete(); // ALTER TABLE AUTO_INCREMENT
+	DB('user', 1)->delete(false); // DISABLE ALTER TABLE
 
 	// DELETE FROM user WHERE login LIKE '%user%'
 	DB('user')

@@ -2,7 +2,6 @@
 
 	// error_reporting(0);
 
-	// header('Content-type: text/html; charset=utf-8');
 	date_default_timezone_set('Etc/GMT-11');
 
 	set_include_path($_SERVER['DOCUMENT_ROOT'].PATH_SEPARATOR);
@@ -53,6 +52,45 @@
 
 		password_verify($string. $salt, $hash) :
 		password_hash($string. $salt, CRYPT_SHA256);
+	}
+
+
+
+
+
+
+
+
+
+
+	/*
+		BITMASK
+	*/
+
+	function bitmask($data, $id = false) {
+
+		$bitmask = null;
+
+		if (gettype($data) == 'array') {
+
+			foreach ($data as $i) {
+
+				$bitmask |= ( $id ? pow(2, $i) : $i );
+			}
+		}
+
+		elseif (gettype($data) == 'integer' || 'string') {
+
+			$bitmask = [];
+
+			for ($i=1; pow(2, $i) <= $data; $i++) {
+
+				if (pow(2, $i) & $data)
+				array_push($bitmask, ( $id ? $i : pow(2, $i) ));
+			}
+		}
+
+		return $bitmask;
 	}
 
 

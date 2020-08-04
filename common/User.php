@@ -1,39 +1,10 @@
 <?php
 
+	const user = 'user';
+	const role = 'role';
+
 	// USER::init();
 	// ROLE::init();
-
-
-
-	// eachPublic(new PERMISSION,
-	// function($key, $value) {
-	// 	// echo $key.': '.$value.'<br>';
-	// 	global $perms;
-	// 	$perms |= $value;
-	//
-	// });
-	
-
-	echo Role('Admin')->delete() ?
-	'Роль Admin удалена' : 'Ошибка при удалении роли Admin';
-
-
-
-	echo Role('Admin')
-		->name('User')
-		->permission(0x40 | 0x800)
-		->description('qeqqe')
-	->update() ?
-	'роль обновлена' : 'ошибка обновления роли';
-
-
-
-	echo Role()
-		->name('Admin')
-		->permission(0x40 | 0x800)
-		->description('qeqqe')
-	->create() ?
-	'Роль Admin создана' : 'Ошибка при создании роли Admin';
 
 
 
@@ -49,7 +20,7 @@
 		global $user;
 
 		return $user[$id] = $user[$id] ?? new USER(
-			$id ? DB('user', $id)->get() : null
+			$id ? DB(user, $id)->get() : null
 		);
 	}
 
@@ -63,10 +34,6 @@
 
 
 	class USER {
-
-		const table = 'user';
-
-
 
 		public $id;
 		public $login;
@@ -83,10 +50,11 @@
 		function __construct($data) {
 
 			$this->data = $data ?? (cookie('token') ?
-				DB(self::table, 'token', cookie('token'))->get() : null
+				DB(user, 'token', cookie('token'))->get() : null
 			);
 
 			eachPublic($this, function($key) {
+
 				$this->$key = $this->data->$key ?? null;
 			});
 		}
@@ -100,9 +68,48 @@
 
 
 
-		function role($set) {
+		function Role($array = null) {
 
-			return true;
+			if ( is_array($array) ) {
+
+				$role = $this->role = ($array ? implode(', ', $array) : null);
+
+				return DB(user, $this->id)
+				->update('role', $role);
+
+			} else {
+
+				$role = ($this->role ? explode(', ', $this->role) : []);
+
+				return array_map('intval', $role);
+			}
+		}
+
+
+		function addRole($id) {
+
+			$id = is_numeric($id) ? $id : Role($id)->id;
+
+			$array = $this->Role();
+
+			if ( in_array($id, $array) ) return false;
+
+			array_push($array, $id);
+			asort($array);
+			return $this->Role($array);
+		}
+
+
+		function removeRole($id) {
+
+			$id = is_numeric($id) ? $id : Role($id)->id;
+
+			$array = $this->Role();
+
+			if ( !in_array($id, $array) ) return false;
+
+			$array = array_diff($array, [$id]);
+			return $this->Role($array);
 		}
 
 
@@ -116,32 +123,32 @@
 
 		static function init() {
 
-			DB(self::table)
+			DB(user)
 			->drop();
 
 
 
-			DB(self::table)
+			DB(user)
 				->id()
 				->var('login')->unique()
 				->var('password')
 				->var('mail')->null()
 				->var('name')->null()
-				->int('role')->null()
+				->var('role')->null()
 				->int('date')->null()
 				->var('token')->null()
 			->create();
 
 
 
-			DB(self::table)
+			DB(user)
 			->insert([
 				'login' => 'Admin',
 				'password' => secret('admin'),
 				'mail' => 'mr.black.developer@gmail.com',
 				'name' => 'Администратор',
-				'role' => 1,
-				'date' => time()
+				'date' => time(),
+				'token' => 'qeqqe'
 			]);
 		}
 	}
@@ -158,9 +165,10 @@
 	class PERMISSION {
 
 		public $ROOT = 0x00000001;
-		public $ADD_CONTENT = 0x00000010;
-		public $EDIT_CONTENT = 0x00000020;
-		public $DELETE_CONTENT = 0x00000030;
+
+		public $ADD = 0x00000002;
+		public $EDIT = 0x00000004;
+		public $DELETE = 0x00000008;
 	}
 
 
@@ -176,9 +184,21 @@
 
 		global $role;
 
-		return $role[$id] = $role[$id] ?? new ROLE(
-			$id ? DB('role', (is_numeric($id) ? 'id' : 'name'), $id)->get() : null
-		);
+
+
+		$role ?: DB(role)->each(function ($r) use (&$role) {
+
+			$role[$r->id] = new ROLE($r);
+		});
+
+
+
+		$i = is_numeric($id) ? $id : array_search($id,
+		array_map(function($r) { return $r->name; }, $role));
+
+		return $role[$i] ?? (func_num_args() ?
+			new ROLE( (object)['name' => $id] ) :
+		$role);
 	}
 
 
@@ -191,10 +211,6 @@
 
 
 	class ROLE {
-
-		const table = 'role';
-
-
 
 		public $id;
 		public $name;
@@ -218,14 +234,15 @@
 
 		function create() {
 
-			return
-
-			DB(self::table)
+			$result = DB(role)
 			->insert([
 				'name' => $this->name,
 				'permission' => $this->permission,
 				'description' => $this->description
 			]);
+
+			unset($GLOBALS['role']);
+			return $result;
 		}
 
 
@@ -258,7 +275,7 @@
 
 			return
 
-			DB(self::table)
+			DB(role)
 			->where('id', $this->id)
 			->update([
 				'name' => $this->name,
@@ -271,23 +288,31 @@
 
 		function delete() {
 
-			return // true always
+			DB(user)
+			->order('role')
+			->like('role', $this->id)
+			->each(function ($user) {
+				User($user->id)->removeRole($this->id);
+			});
 
-			DB(self::table)
+			$result = DB(role)
 			->where('id', $this->id)
 			->delete();
+
+			unset($GLOBALS['role']);
+			return $result; // true always
 		}
 
 
 
 		static function init() {
 
-			DB(self::table)
+			DB(role)
 			->drop();
 
 
 
-			DB(self::table)
+			DB(role)
 				->id()
 				->var('name')->unique()
 				->int('permission')
@@ -296,11 +321,19 @@
 
 
 
-			DB(self::table)
+			DB(role)
 			->insert([
 				'name' => 'root',
-				'permission' => 1
+				'permission' => 0x00000001
 			]);
+
+
+
+			DB(user)
+			->like('role', '')
+			->update('role', null);
+
+			DB(user, 1)->update('role', 1);
 		}
 	}
 ?>
