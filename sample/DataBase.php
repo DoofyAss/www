@@ -6,13 +6,12 @@
 	*/
 
 	// SELECT * FROM user WHERE id = 1
-	$user = DB('user', 1)->get();			// stdClass (*)
+	$user = DB('user', 1)->get(); // array (*)
+	$users = DB('user')->all(); // array (*)
 
-	$user = DB('user', 1)->get('id', 'name');	// stdClass (id, name)
+	$user = DB('user', 1)->get('id', 'name'); // array (id, name)
 	echo $user->id;
 	echo $user->name;
-
-	echo DB('user', 1)->get('name');		// string
 
 	// SELECT * FROM user WHERE id = 1
 	$user = DB('user')

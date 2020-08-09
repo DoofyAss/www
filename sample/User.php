@@ -4,15 +4,20 @@
 		USER
 	*/
 
-	// role
-	User()->addRole(1); // by id or name
-	User()->removeRole('Admin'); // by id or name
+	// add role
+	User()->addRole(1); // by id
 
-	// user id 1 get roles
-	User(1)->Role(); // array ids
+	// remove role
+	User()->removeRole(1); // by id
 
-	// user id 1 set roles id 1 and 2
-	User(1)->Role([1, 2]);
+	// condition user has permission
+	User()->has(PERMISSION::ROOT); // true / false
+
+	// get roles
+	User()->Role(); // array id's
+
+	// update role id to 1 and 2
+	User()->Role([1, 2]);
 
 
 
@@ -28,12 +33,14 @@
 	*/
 
 	// get all roles
-	Role();
+	Role(); // array
 
 	// create
-	Role('Admin')
-		->permission(0x00000001)
-	->create();
+	Role('Admin')->create();
+
+	// delete
+	Role(1)->delete(); // by id
+	Role('Admin')->delete(); // by name
 
 	// update
 	Role('Admin')
@@ -41,9 +48,5 @@
 		->permission(0x00000002)
 		->description('User')
 	->update();
-
-	// delete
-	Role(1)->delete(); // by id
-	Role('Admin')->delete(); // by name
 
 ?>

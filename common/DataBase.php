@@ -192,8 +192,21 @@
 			// echo '<br>'. $this->SQL(); // debug
 
 			global $db;
-			$result = $db->query( $this->SQL() )->fetch();
-			return count($arg) == 1 ? $result->$column : $result;
+			return $db->query( $this->SQL() )->fetch();
+		}
+
+
+
+
+		function all() {
+
+			$this->query = "SELECT * FROM $this->table";
+
+			// echo '<br>'. $this->SQL(); // debug
+			// PDO::FETCH_UNIQUE
+
+			global $db;
+			return $db->query( $this->SQL() )->fetchAll();
 		}
 
 
@@ -229,7 +242,6 @@
 			// echo '<br>'. $this->SQL(); // debug
 
 			foreach ($this->query( $this->SQL() )->fetchAll() as $key => $row) {
-				// $function($row);
 				call_user_func ($function, $row, $key);
 			}
 

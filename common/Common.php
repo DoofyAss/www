@@ -67,26 +67,22 @@
 		BITMASK
 	*/
 
-	function bitmask($data, $id = false) {
+	function bitmask($data) {
 
 		$bitmask = null;
 
-		if (gettype($data) == 'array') {
+		if (is_array($data)) {
 
-			foreach ($data as $i) {
+			foreach ($data as $bit) { $bitmask |= $bit; }
 
-				$bitmask |= ( $id ? pow(2, $i) : $i );
-			}
-		}
-
-		elseif (gettype($data) == 'integer' || 'string') {
+		} else {
 
 			$bitmask = [];
 
-			for ($i=1; pow(2, $i) <= $data; $i++) {
+			for ($i=0; pow(2, $i) <= $data; $i++) {
 
 				if (pow(2, $i) & $data)
-				array_push($bitmask, ( $id ? $i : pow(2, $i) ));
+				array_push($bitmask, pow(2, $i));
 			}
 		}
 
@@ -106,17 +102,41 @@
 		each class public variables
 	*/
 
-	function eachPublic($class, $function) {
+	function assignClassData($class, $data) {
 
-		$refClass = new ReflectionClass($class);
+		array_map(function($key) use ($class, $data) {
 
-		$props = array_map(function($array) {
-			return $array->name;
-		}, $refClass->getProperties(ReflectionProperty::IS_PUBLIC));
+			$class->{$key->name} =
+			$data->{$key->name} ?? null;
 
-		foreach ($props as $key) {
+		}, (new ReflectionClass($class))
+		->getProperties(ReflectionProperty::IS_PUBLIC));
+	}
 
-			$function($key, $class->{$key});
-		}
+
+
+
+
+
+
+
+
+
+	/*
+		unset global
+	*/
+
+	function globalUnset($variable) {
+
+		unset($GLOBALS[$variable]);
+	}
+
+	/*
+		return null if string = ""
+	*/
+
+	function nullstr($string) {
+
+		return $string ? $string : null;
 	}
 ?>

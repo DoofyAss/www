@@ -30,6 +30,25 @@
 	$hash = secret('paSSword');
 
 	// string to hash match
-	echo secret('paSSword', $hash) ? 'valid' : 'invalid';
+	secret('paSSword', $hash); // true / false
+
+
+
+
+
+
+
+
+
+
+	/*
+		BITMASK
+	*/
+	
+	// array [16, 32]
+	$array = bitmask(48);
+
+	// int 48
+	$int = bitmask([16, 32]);
 
 ?>
