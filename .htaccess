@@ -1,8 +1,9 @@
 Options -Indexes
 
 RewriteEngine On
-RewriteCond %{REQUEST_URI} !/common/(Route|404).php$
-RewriteCond %{REQUEST_URI} !^/$
-RewriteRule $ / [L,R=404]
+RewriteCond %{REQUEST_URI} !/$
+RewriteCond %{REQUEST_URI} !/(Route|404).php$
+RewriteCond %{REQUEST_URI} !(.js|.css)$
 
-ErrorDocument 404 /common/Route.php
+RewriteRule $ / [L,R=404]
+ErrorDocument 404 /system/Route.php

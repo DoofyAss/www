@@ -7,6 +7,7 @@
 	set_include_path($_SERVER['DOCUMENT_ROOT'].PATH_SEPARATOR);
 	include_once 'DataBase.php';
 	include_once 'User.php';
+	include_once 'View.php';
 
 
 
