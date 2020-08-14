@@ -5,7 +5,6 @@
 
 	cookie('token', 'qeqqe'); // temp auth
 
-	$v = view('main');
-	$v->user = DB('user')->all();
+	$v = view('/');
 	$v->render();
 ?>

@@ -1,7 +1,17 @@
 <?php
 
-	// create view
-	$v = view('template');
+	/*
+		create view
+	*/
+
+	// view/file.v
+	$v = view('file');
+
+	// view/folder/index.v
+	$v = view('folder/');
+
+	// view/folder/file.v
+	$v = view('folder/file');
 
 
 
@@ -39,6 +49,6 @@
 		html example
 	*/
 
-	{ include: view }
+	{ include: file/ }
 
 ?>

@@ -1,20 +1,15 @@
 <?php
 
-	function view($name) {
+	function view($path) {
 
-		$view = __DIR__. '/../view/'. $name. '.v';
-
-		// is_file($view)
-
-		$view = file_get_contents($view);
-
-		return new VIEW($view);
+		return new VIEW($path);
 	}
 
 
 
 	class VIEW {
 
+		const incl = '/{[\s]*include:[\s]*([\w\/]+)[\s]*}/s';
 		const each = '/{[\s]*each:[\s]*(\w+)[\s]*{[\s]*(.*?)[\s]*}}/s';
 		const vars = '/{[\s]*([\w\->]+)[\s]*}/s';
 
@@ -22,9 +17,50 @@
 
 		public $view;
 
-		function __construct($view) {
+		function __construct($path) {
 
-			$this->view = $view;
+			$this->view = $this->load($path);
+		}
+
+
+
+
+
+
+
+
+
+
+		function load($path) {
+
+			$file = __DIR__. '/../view/'. $path.
+			((@end(explode('/', $path))) ? null : 'index'). '.v';
+
+			return is_file($file) ?
+			file_get_contents($file) : null;
+		}
+
+
+
+
+
+
+
+
+
+
+		function incl($subject) {
+
+			if ($int = preg_match_all(self::incl, $subject, $m)) {
+
+				for ($i=0; $i<$int; $i++) {
+
+					$subject = str_replace($m[0][$i],
+					$this->load($m[1][$i]), $subject);
+				}
+			}
+
+			return $subject;
 		}
 
 
@@ -61,6 +97,12 @@
 
 
 
+
+
+
+
+
+
 		function variables($subject) {
 
 			if ($int = preg_match_all(self::vars, $subject, $m)) {
@@ -74,6 +116,13 @@
 
 			return $subject;
 		}
+
+
+
+
+
+
+
 
 
 
@@ -114,16 +163,18 @@
 
 
 
+
+
 		function render() {
 
-			// includes
+			$this->view = $this->incl($this->view);
 
 			// conditions
 
 			$this->view = $this->each($this->view);
 			$this->view = $this->variables($this->view);
 
-			echo preg_replace('/\s+/', ' ', $this->view);
+			echo $this->view;
 		}
 	}
 
