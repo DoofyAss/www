@@ -9,12 +9,6 @@
 
 	class VIEW {
 
-		const incl = '/{[\s]*include:[\s]*([\w\/]+)[\s]*}/s';
-		const each = '/{[\s]*each:[\s]*(\w+)[\s]*{[\s]*(.*?)[\s]*}}/s';
-		const vars = '/{[\s]*([\w\->]+)[\s]*}/s';
-
-
-
 		public $view;
 
 		function __construct($path) {
@@ -24,16 +18,9 @@
 
 
 
-
-
-
-
-
-
-
 		function load($path) {
 
-			$file = __DIR__. '/../view/'. $path.
+			$file = __ROOT__. '/view/'. $path.
 			((@end(explode('/', $path))) ? null : 'index'). '.v';
 
 			return is_file($file) ?
@@ -45,120 +32,63 @@
 
 
 
+		function match($s, $recursion = false) {
 
 
 
-
-		function incl($subject) {
-
-			if ($int = preg_match_all(self::incl, $subject, $m)) {
-
-				for ($i=0; $i<$int; $i++) {
-
-					$subject = str_replace($m[0][$i],
-					$this->load($m[1][$i]), $subject);
-				}
-			}
-
-			return $subject;
-		}
+			$reg = ! $recursion ?
+			[ '/({(?:[^{}]|(?1))*})/' ] :
+			[
+				'log0' => '/{ \w (.+) }/s',
+				'log1' => '/{ \w: (.+) }/s',
+			];
 
 
 
+			foreach (array_values($reg) as $key => $regex) {
 
+				if ($int = preg_match_all($regex, $s, $m)) {
 
+					for ($i=0; $i<$int; $i++) {
 
+						if ($recursion) {
 
+							$handler = array_keys($reg)[$key];
 
+							$s = str_replace($m[0][$i],
+							$this->{$handler}($m[1][$i]), $s);
 
+							$s = $this->match($s, true);
 
-		function each($subject) {
+						} else {
 
-			if ($int = preg_match_all(self::each, $subject, $m)) {
+							$s = str_replace($m[0][$i],
+							$this->match($m[1][$i], true), $s);
+						}
 
-				for ($i=0; $i<$int; $i++) {
-
-					$content = '';
-
-					if ($array = $this->{$m[1][$i]})
-					foreach (array_keys($array) as $key) {
-
-						$this->key = $key;
-						$content .= $this->variables($m[2][$i]);
 					}
-
-					$subject = str_replace($m[0][$i], $content, $subject);
 				}
 			}
 
-			return $subject;
+			return $s;
 		}
 
 
 
 
+		function log0($str) {
 
+			echo 'log 0: '. $str. '<br>';
 
-
-
-
-
-		function variables($subject) {
-
-			if ($int = preg_match_all(self::vars, $subject, $m)) {
-
-				for ($i=0; $i<$int; $i++) {
-
-					$subject = str_replace($m[0][$i],
-					$this->variable($m[1][$i]), $subject);
-				}
-			}
-
-			return $subject;
+			return $str;
 		}
 
+		function log1($str) {
 
+			echo 'log 1: '. $str. '<br>';
 
-
-
-
-
-
-
-
-		function variable($var) {
-
-			list($variable, $object) =
-
-			count($var = explode('->', $var)) == 2 ?
-			[$var[1], $var[0]] : [$var[0], null];
-
-			return
-
-			// each object
-			$this->{$object}[$this->key]->{$variable} ??
-
-			// each array
-			$this->{$object}[$this->key][$variable] ??
-
-			// object
-			$this->{$object}->{$variable} ??
-
-			// array
-			$this->{$object}  [$variable] ??
-
-			// variable
-			$this->{$variable} ??
-
-			($object ?
-				"[ undefined: $object->$variable ]" :
-				"[ undefined: $variable ]"
-			);
+			return $str;
 		}
-
-
-
-
 
 
 
@@ -167,14 +97,8 @@
 
 		function render() {
 
-			$this->view = $this->incl($this->view);
-
-			// conditions
-
-			$this->view = $this->each($this->view);
-			$this->view = $this->variables($this->view);
-
-			echo $this->view;
+			echo $this->view =
+			$this->match($this->view);
 		}
 	}
 

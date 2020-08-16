@@ -31,24 +31,4 @@
 	// render
 	$v->render();
 
-
-
-	/*
-		each
-		html example
-	*/
-
-	{ each: object {
-		<div>{ object->name }</div>
-	}}
-
-
-
-	/*
-		include view
-		html example
-	*/
-
-	{ include: file/ }
-
 ?>

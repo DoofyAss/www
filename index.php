@@ -1,10 +1,14 @@
 <?php
 
-	set_include_path($_SERVER['DOCUMENT_ROOT'].PATH_SEPARATOR);
+	define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
+
+	set_include_path(__ROOT__);
 	include_once 'system/index.php';
 
 	cookie('token', 'qeqqe'); // temp auth
 
 	$v = view('/');
+	// $v->bool = true;
 	$v->render();
+
 ?>
