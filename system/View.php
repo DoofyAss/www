@@ -18,6 +18,13 @@
 
 
 
+
+
+
+
+
+
+
 		function load($path) {
 
 			$file = __ROOT__. '/view/'. $path.
@@ -32,38 +39,47 @@
 
 
 
-		function match($s, $recursion = false) {
 
 
 
-			$reg = ! $recursion ?
+
+		function logic($s, $recursion = false) {
+
+
+
+			$regEx = ! $recursion ?
 			[ '/({(?:[^{}]|(?1))*})/' ] :
 			[
-				'log0' => '/{ \w (.+) }/s',
-				'log1' => '/{ \w: (.+) }/s',
+				'condition' => '/^\s*{\s*(\w+)\s*\?\s*(.*?)(?:\s*:\s*([{"\'][^{}"\']*[}"\']|\S+))?\s*}\s*$/us',
+				'include' => '/{\s*include\s+([\/\w]+)\s*}/us',
+				'each' => '/{\s*(\w+)\s*:\s*(.*)}/us',
+
+				'variable' => '/{\s*(\w+)\s*}/us',
+				'object' => '/{\s*(\w*)(?:[^\-\>]|->(\w*))?\s*}/us',
+				'array' => '/{\s*(\w*)(?:\[[^\[\]]*|\[(.*)\])\s*}/us'
 			];
 
 
 
-			foreach (array_values($reg) as $key => $regex) {
+			foreach (array_values($regEx) as $index => $r) {
 
-				if ($int = preg_match_all($regex, $s, $m)) {
+				if ($count = preg_match_all($r, $s, $m)) {
 
-					for ($i=0; $i<$int; $i++) {
+					for ($i=0; $i<$count; $i++) {
 
 						if ($recursion) {
 
-							$handler = array_keys($reg)[$key];
+							$handler = array_keys($regEx)[$index];
 
 							$s = str_replace($m[0][$i],
-							$this->{$handler}($m[1][$i]), $s);
+							$this->{$handler}($m, $i), $s);
 
-							$s = $this->match($s, true);
+							$s = $this->logic($s, true);
 
 						} else {
 
 							$s = str_replace($m[0][$i],
-							$this->match($m[1][$i], true), $s);
+							$this->logic($m[1][$i], true), $s);
 						}
 
 					}
@@ -76,19 +92,85 @@
 
 
 
-		function log0($str) {
 
-			echo 'log 0: '. $str. '<br>';
 
-			return $str;
+
+
+
+
+		function condition($m, $i) {
+
+			return $this->{$m[1][$i]} ?
+			$m[2][$i] : $m[3][$i] ?? null;
 		}
 
-		function log1($str) {
 
-			echo 'log 1: '. $str. '<br>';
 
-			return $str;
+
+
+
+
+
+
+
+		function include($m, $i) {
+
+			return $this->logic( $this->load($m[1][$i]) );
 		}
+
+
+
+
+
+
+
+
+
+
+		function each($m, $i) {
+
+			$content = '';
+
+			if (is_array($array = $this->{$m[1][$i]}))
+			foreach (array_keys($array) as $index) {
+
+				$this->index = $index;
+				$content .= $this->logic($m[2][$i]);
+			}
+
+			return $content;
+		}
+
+
+
+
+
+
+
+
+
+
+		function object($m, $i) {
+
+			return $this->{$m[1][$i]}[$this->index]->{$m[2][$i]} ??
+			"({$m[1][$i]}->{$m[2][$i]} : undefined);";
+		}
+
+		function array($m, $i) {
+
+			return $this->{$m[1][$i]}[$this->index][$m[2][$i]] ??
+			"({$m[1][$i]}[{$m[2][$i]}] : undefined);";
+		}
+
+		function variable($m, $i) {
+
+			return $this->{$m[1][$i]} ??
+			"({$m[1][$i]} : undefined);";
+		}
+
+
+
+
 
 
 
@@ -98,7 +180,7 @@
 		function render() {
 
 			echo $this->view =
-			$this->match($this->view);
+			$this->logic($this->view);
 		}
 	}
 

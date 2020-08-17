@@ -8,7 +8,7 @@
 	cookie('token', 'qeqqe'); // temp auth
 
 	$v = view('/');
-	// $v->bool = true;
+	$v->user = DB('user')->all();
 	$v->render();
 
 ?>

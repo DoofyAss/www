@@ -5,9 +5,7 @@
 
 <div class='template'>
 
-	{ 0 { 1 { 2 { 3 { 4 { 5 { 6 } } } } } } }
-
-	{ 0: { a: { b: { c: { d: { e: } } } } } }
+	{ user : <div>{ user->name }</div> }
 
 </div>
 

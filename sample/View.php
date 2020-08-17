@@ -16,16 +16,42 @@
 
 
 	/*
-		variables
+		condition
 	*/
 
-	// { object->variable }
-	$v->object->variable = 'object var';
+	$v->bool = true;
 
-	// { array->key }
+	// v
+	{ bool ? true : false }
+
+
+
+	/*
+		each array
+	*/
+
 	$v->array = ['key' => 'array var'];
 
-	// { variable }
+	// v
+	{ array: <div>{ array[key] }</div> }
+
+
+
+	/*
+		each object
+	*/
+
+	$v->object = [
+		(object) ['key' => 'object var 0'],
+		(object) ['key' => 'object var 1']
+	];
+
+	// v
+	{ array: <div>{ array->key }</div> }
+
+
+
+	// variable
 	$v->variable = 'var';
 
 	// render
