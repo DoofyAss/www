@@ -47,12 +47,20 @@
 	];
 
 	// v
-	{ array: <div>{ array->key }</div> }
+	{ object: <div>{ object->key }</div> }
 
 
 
-	// variable
+	/*
+		variable
+	*/
+
 	$v->variable = 'var';
+
+	// v
+	{ variable }
+
+
 
 	// render
 	$v->render();
