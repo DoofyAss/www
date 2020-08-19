@@ -3,10 +3,6 @@
 <!-- <link rel='stylesheet' href='view/index.css'> -->
 <title>Main</title>
 
-<div class='template'>
-
-	{ user : <div>{ user->name }</div> }
-
-</div>
+<div class='template'></div>
 
 <!-- <script src='view/index.js'></script> -->

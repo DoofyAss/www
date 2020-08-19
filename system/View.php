@@ -1,6 +1,6 @@
 <?php
 
-	function view($path) {
+	function view($path = '') {
 
 		return new VIEW($path);
 	}

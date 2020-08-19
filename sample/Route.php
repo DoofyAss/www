@@ -1,35 +1,46 @@
 ﻿<?php
 
 	/*
-		/user		- direct route
-		/{name}		- string
-		/[id]		- integer, float
+		direct route
 	*/
 
+	// domain/user
 
-
-	// domain/user/Admin ( string )
-	ROUTE('/user/{name}')
-	->GET(function($name) {
-		echo $name; // Admin
-	});
+	Route('/user')
+	->get(function() { ... });
 
 
 
-	// domain/user/1 ( numeric )
-	ROUTE('/user/[id]')
-	->GET(function($id) {
-		echo $id; // 1
-	});
+	/*
+		string
+	*/
+
+	// domain/user/admin
+
+	Route('/user/[name]')
+	->get(function($name) { ... });
 
 
 
-	// domain/Admin/page/32
-	ROUTE('/{name}/page/[num]')
-	->GET(function($name, $num) {
+	/*
+		numeric
+	*/
 
-		echo $name; // Admin
-		echo $num; // 32
-	});
+	// domain/user/1
+
+	Route('/user/(id)')
+	->get(function($id) { ... });
+
+
+
+	/*
+		any type
+	*/
+
+	// domain/direct/1
+	// domain/direct/name
+
+	Route('/direct/{any}')
+	->get(function($any) { ... });
 
 ?>

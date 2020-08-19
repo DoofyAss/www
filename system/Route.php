@@ -1,16 +1,15 @@
-﻿<?php
-
-	set_include_path($_SERVER['DOCUMENT_ROOT'].PATH_SEPARATOR);
-	include_once 'system/index.php';
+<?php
 
 	http_response_code(404);
 
 
 
-	function ROUTE($url) {
+	function Route($url = '/') {
 
 		return new ROUTE($url);
 	}
+
+
 
 	class ROUTE {
 
@@ -19,7 +18,7 @@
 
 		function __construct($url) {
 
-			$this->uri = explode('/', rtrim($_SERVER['REQUEST_URI'], '/'));
+			$this->uri = explode('/', $_SERVER['REQUEST_URI']);
 			$this->url = explode('/', $url);
 		}
 
@@ -32,29 +31,35 @@
 
 
 
-		function GET($function) {
+		function get($function) {
 
-			if (count($this->url) != count($this->uri)) return;
+			if (
+				count($this->url) !=
+				count($this->uri)
+			) return;
 
-			$args = [];
+
+
+			$arg = [];
 
 			foreach ($this->url as $index => $url) {
 
 				$uri = $this->uri[$index];
 
-				if (SELF::inBraces($url, $uri)) {
+				if ($this->type($url, $uri)) {
 
-					array_push($args, $uri);
+					array_push($arg, $uri);
 
 				} else {
 
 					if ($url != $uri) return;
-
 				}
 			}
+
+
 
 			http_response_code(200);
-			call_user_func_array($function, $args);
+			exit (call_user_func_array($function, $arg));
 		}
 
 
@@ -66,30 +71,23 @@
 
 
 
-		static private function inBraces($url, $uri) {
+		function type($url, $uri) {
 
-			foreach ([
+			$type = [
+				'/\{(.*)\}/' => '/(\w+)/', // any
+				'/\((.*)\)/' => '/(\d+)/', // int
+				'/\[(.*)\]/' => '/(\D\w+)/'// str
+			];
 
-				'/\{(.*)\}/',
-				'/\[(.*)\]/'
+			foreach ($type as $l => $i) {
 
-			] as $index => $reg) {
-
-				if (preg_match($reg, $url, $m)) {
-
-					return $index ?
-					(is_numeric($uri) ? true : false) :
-					(!is_numeric($uri) ? true : false);
-				}
+				if (preg_match($l, $url))
+				if (preg_match($i, $uri))
+				return true;
 			}
+
+			return false;
 		}
-
-
-
-		/*static private function removeBraces($uri) {
-
-			return preg_split('/\{|\}|\[|\](.*)?/', $uri, -1, PREG_SPLIT_NO_EMPTY)[0];
-		}*/
 	}
 
 
@@ -101,13 +99,10 @@
 
 
 
-	include_once 'Route.php';
-
-	if (http_response_code() == 404) NotFound();
-
 	function NotFound() {
 
-		exit (include '404.php');
+		http_response_code(404);
+		exit( view('404')->render() );
 	}
 
 ?>
