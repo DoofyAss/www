@@ -3,12 +3,15 @@
 	// error_reporting(0);
 
 	date_default_timezone_set('Etc/GMT-11');
+	define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
 
-	include_once 'Route.php';
+	set_include_path(__ROOT__.'/system/');
 
 	include_once 'DataBase.php';
 	include_once 'User.php';
 	include_once 'View.php';
+
+	include_once 'Route.php';
 
 
 

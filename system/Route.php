@@ -1,7 +1,5 @@
 <?php
 
-	http_response_code(404);
-
 
 
 	function Route($url = '/') {
@@ -32,6 +30,8 @@
 
 
 		function get($function) {
+
+			if (!empty($_POST)) return;
 
 			if (
 				count($this->url) !=
@@ -99,10 +99,25 @@
 
 
 
+	include_once __ROOT__.'/index.php';
+
+	NotFound();
+
+
+
+
+
+
+
+
+
+
 	function NotFound() {
 
 		http_response_code(404);
-		exit( view('404')->render() );
+
+		if (!empty($_POST)) exit;
+		exit ( view('404')->render() );
 	}
 
 ?>
