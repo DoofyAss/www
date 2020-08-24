@@ -22,13 +22,6 @@
 
 
 
-
-
-
-
-
-
-
 		function get($function) {
 
 			if (!empty($_POST)) return;
@@ -55,19 +48,9 @@
 					if ($url != $uri) return;
 				}
 			}
-
-
-
-			http_response_code(200);
+			
 			exit (call_user_func_array($function, $arg));
 		}
-
-
-
-
-
-
-
 
 
 
@@ -99,25 +82,80 @@
 
 
 
+	function Request($key) {
+
+		return new REQUEST($key);
+	}
+
+
+
+	class REQUEST {
+
+		private $request;
+
+		function __construct($key) {
+
+			$this->request = $key == key($_POST);
+
+			$this->data = new stdClass();
+			$this->data->this = $_POST[$key] ?? null;
+		}
+
+
+
+		function use(...$data) {
+
+			if ($this->request) {
+
+				foreach ($data as $key) {
+
+					$this->data->{$key} = $_POST[$key] ?? BadRequest();
+				}
+			}
+
+			return $this;
+		}
+
+
+
+		function get($function) {
+
+			if ($this->request)
+			exit (call_user_func($function, $this->data));
+		}
+	}
+
+
+
+
+
+
+
+
+
+
 	include_once __ROOT__.'/index.php';
+
+
 
 	NotFound();
 
 
 
-
-
-
-
-
-
-
 	function NotFound() {
 
-		http_response_code(404);
+		if (!empty($_POST)) BadRequest();
 
-		if (!empty($_POST)) exit;
+		http_response_code(404);
 		exit ( view('404')->render() );
+	}
+
+
+
+	function BadRequest() {
+
+		http_response_code(400);
+		exit ('Bad Request');
 	}
 
 ?>

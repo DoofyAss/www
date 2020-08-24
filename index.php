@@ -4,19 +4,9 @@
 
 
 
-	// temp Request
-
-	if (isset($_POST['sakmadik'])) {
-
-		http_response_code(200);
-		echo 'sakmadik';
-
-		// http_response_code(400);
-
-		exit();
-	}
-
-
+	/*
+		Route
+	*/
 
 	// Main
 
@@ -24,5 +14,16 @@
 
 		view()->render();
 	});
+
+
+
+	/*
+		Request
+	*/
+
+	// test
+
+	Request('test')
+	->get(fn() => 'ok');
 
 ?>

@@ -141,6 +141,3 @@ var $ = {
 		return this;
 	}
 }
-
-$.Request('sakmadik')
-.Success(r => console.log(r))

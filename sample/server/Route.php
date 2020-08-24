@@ -43,4 +43,35 @@
 	Route('/direct/{any}')
 	->get(function($any) { ... });
 
+
+
+
+
+
+
+
+
+
+	/*
+		Request
+	*/
+
+	// auth&login=user&password=paSSword
+
+	Request('auth')->use('login', 'password')
+	->get(function($data) {
+
+		echo $data->login;
+	});
+
+
+
+	// item@delete=1
+
+	Request('item@delete')
+	->get(function($data) {
+
+		echo $data->this;
+	});
+
 ?>
