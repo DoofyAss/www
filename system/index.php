@@ -7,11 +7,16 @@
 
 	set_include_path(__ROOT__.'/system/');
 
-	include_once 'DataBase.php';
-	include_once 'User.php';
-	include_once 'View.php';
+	foreach ([
 
-	include_once 'Route.php';
+		'DataBase.php',
+		'User.php',
+		'View.php',
+		'File.php',
+
+		'Route.php'
+
+	] as $script) { include_once $script; }
 
 
 

@@ -2,5 +2,5 @@
 
 
 
-$.Request('test')
-.Success(r => console.log(r));
+// $.Request('test')
+// .Success(r => console.log(r));

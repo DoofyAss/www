@@ -12,7 +12,17 @@
 
 	Route()->get(function() {
 
-		view()->render();
+		// echo $hash = hash_file('crc32b', __ROOT__."/README.md" );
+
+		$v = view();
+
+		$v->upload = true;
+		$v->file = [
+			(object) ['name' => 'document.xlsx'],
+			(object) ['name' => 'документ.docx']
+		];
+
+		$v->render();
 	});
 
 

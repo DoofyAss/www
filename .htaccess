@@ -3,7 +3,7 @@ Options -Indexes
 RewriteEngine On
 
 RewriteCond %{REQUEST_URI} !/system/index.php$
-RewriteCond %{REQUEST_URI} !(.js|.css)$
+RewriteCond %{REQUEST_URI} !(.js|.css|.ttf|.woff)$
 RewriteCond %{REQUEST_URI} !(.txt|.jpg|.png)$
 
 RewriteRule $ /system/index.php [L]
