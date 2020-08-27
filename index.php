@@ -14,7 +14,7 @@
 
 		// echo $hash = hash_file('crc32b', __ROOT__."/README.md" );
 
-		$v = view();
+		/*$v = view();
 
 		$v->upload = true;
 		$v->file = [
@@ -22,7 +22,9 @@
 			(object) ['name' => 'документ.docx']
 		];
 
-		$v->render();
+		$v->render();*/
+
+		view('file/')->render();
 	});
 
 
@@ -30,6 +32,18 @@
 	/*
 		Request
 	*/
+
+	Request('file@upload')
+	->get(function($data) {
+
+		echo $data->this;
+	});
+
+	Request('time')
+	->get(function() {
+
+		echo time();
+	});
 
 	// test
 

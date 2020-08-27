@@ -1,4 +1,4 @@
-<div class='file'>
-	<input value='{ file->name }' name='{ file->name }' size='1024'>
-	<div class='progress'></div>
+<div class='file' ext='xlsx' size='4MB'>
+	<input value='Document' name='Document' disabled>
+	<progress max='100' value='60'></progress>
 </div>
