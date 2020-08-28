@@ -152,7 +152,9 @@
 
 		function object($m, $i) {
 
-			return $this->{$m[1][$i]}[$this->index]->{$m[2][$i]} ??
+			return
+			$this->{$m[1][$i]}->{$m[2][$i]} ?? // object
+			$this->{$m[1][$i]}[$this->index]->{$m[2][$i]} ?? // array object
 			"({$m[1][$i]}->{$m[2][$i]} : undefined);";
 		}
 

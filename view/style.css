@@ -59,6 +59,7 @@ html, body {
 	display: block;
 	width: inherit;
 	height: 48px;
+	border-bottom: 1px solid #eaeaed;
 }
 
 .file input {

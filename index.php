@@ -12,18 +12,6 @@
 
 	Route()->get(function() {
 
-		// echo $hash = hash_file('crc32b', __ROOT__."/README.md" );
-
-		/*$v = view();
-
-		$v->upload = true;
-		$v->file = [
-			(object) ['name' => 'document.xlsx'],
-			(object) ['name' => 'документ.docx']
-		];
-
-		$v->render();*/
-
 		view('file/')->render();
 	});
 
@@ -33,16 +21,25 @@
 		Request
 	*/
 
-	Request('file@upload')
+	Request('file-upload')
 	->get(function($data) {
 
-		echo $data->this;
-	});
+		$data = json_decode($data->this);
 
-	Request('time')
-	->get(function() {
+		foreach ($data as $file) {
 
-		echo time();
+			$v = view('file/upload');
+
+			$v->data = (object) [
+				'id' => $file->id,
+				'name' => pathinfo($file->name, PATHINFO_FILENAME),
+				'ext' => pathinfo($file->name, PATHINFO_EXTENSION),
+				'size' => $file->size
+			];
+
+			$v->render();
+		}
+
 	});
 
 	// test
