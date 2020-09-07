@@ -26,19 +26,20 @@
 
 		$data = json_decode($data->this);
 
+		$v = view('file/upload');
+		$v->file = [];
+
 		foreach ($data as $file) {
 
-			$v = view('file/upload');
-
-			$v->data = (object) [
+			array_push($v->file, (object) [
 				'id' => $file->id,
 				'name' => pathinfo($file->name, PATHINFO_FILENAME),
 				'ext' => pathinfo($file->name, PATHINFO_EXTENSION),
 				'size' => $file->size
-			];
-
-			$v->render();
+			]);
 		}
+
+		$v->render();
 
 	});
 

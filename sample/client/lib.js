@@ -6,29 +6,29 @@
 */
 
 // domain/request
-var xhr = $.Request('request');
+var xhr = Request('request');
 
 // domain/key=value
-$.Request({'key': 'value'});
+Request({'key': 'value'});
 
 // domain/request&key=value
-$.Request('request', {'key': 'value'});
+Request('request', {'key': 'value'});
 
 
 
 // Before send
 
-$.Request('...')
+Request('...')
 .Before(function() { ... });
 
 // Progress (if header Content-Length exist)
 
-$.Request('...')
+Request('...')
 .Progress((percent, loaded, total) => console.log(`${percent}%`));
 
 // Success
 
-$.Request('...')
+Request('...')
 .Success(r => console.log('done'));
 
 
@@ -83,12 +83,18 @@ array.each((value, key, index) => { ... });
 
 
 
-/* Byte Converter */
+/*
+	Byte Converter
+*/
 
-// return 32GB
+// return 32 GB
 size(34359738368);
 
-/* Timestamp Converter */
+
+
+/*
+	Timestamp Converter
+*/
 
 // return date
 date(1598553228270);

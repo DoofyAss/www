@@ -85,7 +85,7 @@ HTMLElement.prototype.effect = function(name) {
 	this.removeClass(name);
 	this.getBoundingClientRect();
 	this.addClass(name);
-	this.addEventListener('animationend', () => this.removeClass(name));
+	this.onanimationend = () => this.removeClass(name);
 }
 
 
@@ -123,7 +123,10 @@ Object.prototype.each = function(c) {
 function size(byte) {
 
 	let i = Math.floor( Math.log(byte) / Math.log(1024) );
-	return (byte / Math.pow(1024, i)).toFixed(2) * 1 + ['B', 'KB', 'MB', 'GB'][i];
+
+	return byte == 0 ? '0 Byte' :
+
+	(byte / Math.pow(1024, i)).toFixed(2) * 1 + [' Byte', ' KB', ' MB', ' GB'][i];
 }
 
 
@@ -160,142 +163,169 @@ function timestamp(date) {
 
 
 
-var $ = {
+/*
+	Request
+*/
 
-
-
-
-
-
-
+var Request = function() {
 
 
 
 	/*
-		Request
+		Data
 	*/
 
-	Request: function() {
+	let data = Array.from(arguments).map(e => object(e)).join('&');
+
+	function object(e) {
+
+		return typeof e == 'string' ? e :
+		Object.entries(e).map(e => e.join('=')).join('&');
+	}
 
 
 
-		this.Error = function(c) {
+	/*
+		XMLHttpRequest
+	*/
 
-			this.Error = c;
-			return this;
-		}
+	function post(xhr) {
 
+		xhr.open('POST', window.location.origin);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
+		xhr.Error = function(c) { xhr.Error = c; return this; };
+		xhr.Before = function(c) { xhr.Before = c; return this; };
+		xhr.Success = function(c) { xhr.Success = c; return this; };
+		xhr.Progress = function(c) { xhr.Progress = c; return this; };
 
-		this.Success = function(c) {
-
-			this.Success = c;
-			return this;
-		}
-
-
-
-		this.Progress = function(c) {
-
-			this.Progress = c;
-			return this;
-		}
+		(async function() {
 
 
 
-		this.Before = function(c) {
+			/*
+				Before Send
+			*/
 
-			this.Before = c;
-			return this;
-		}
+			xhr.onreadystatechange = function() {
 
-
-
-		/*
-			Data
-		*/
-
-		this.data = Array.from(arguments).map(e => object(e)).join('&');
-
-		function object(e) {
-
-			return typeof e == 'string' ? e :
-			Object.entries(e).map(e => e.join('=')).join('&');
-		}
+				if (this.readyState == 2)
+				try { this.Before.call(this, this); } catch { }
+			}
 
 
 
-		/*
-			XMLHttpRequest
-		*/
+			/*
+				Error
+				Success
+			*/
 
-		this.xhr = post(new XMLHttpRequest(), this);
+			xhr.onload = function() {
 
-		function post(xhr, self) {
+				try {
 
-			xhr.open('POST', window.location.origin);
-			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+					if (this.status != 200)
+					this.Error.call(this, this.response);
 
-			(async function() {
+					if (this.status == 200)
+					this.Success.call(this, this.response);
+
+				} catch { }
+			}
 
 
 
-				/*
-					Before Send
-				*/
+			/*
+				Progress
+			*/
 
-				xhr.onreadystatechange = function() {
+			xhr.onprogress = function(e) {
 
-					if (this.readyState == 2)
-					try { self.Before.call(self, self); } catch { }
+				try {
+
+					if (this.getResponseHeader('Content-Length')) {
+
+						let percent = parseInt(e.loaded / e.total * 100);
+						this.Progress.call(this, percent, e.loaded, e.total);
+					}
+
+				} catch { }
+			}
+
+
+
+			xhr.send(data);
+
+		})();
+
+		return xhr;
+	}
+
+	return post(new XMLHttpRequest());
+}
+
+
+
+
+
+
+
+
+
+
+/*
+	File
+*/
+
+var File = {
+
+	list: [],
+
+
+
+	get modified() {
+
+		return File.list.map(file => file.lastModified);
+	},
+
+
+	
+	get data() {
+
+		return File.list.map(file => file.data);
+	},
+
+
+
+	add: function(area) {
+
+		let form = document.createElement('input');
+		form.type = 'file';
+		form.multiple = true;
+		form.click();
+
+
+
+		form.onchange = function() {
+
+
+
+			this.files.each(file => {
+
+				if (!File.modified.includes(file.lastModified)) {
+
+					file.data = {
+
+						id: file.lastModified,
+						name: file.name,
+						size: file.size
+					}
+
+					File.list.push(file);
 				}
+			});
 
-
-
-				/*
-					Progress
-				*/
-
-				xhr.onprogress = function(e) {
-
-					try {
-
-						if (xhr.getResponseHeader('Content-Length')) {
-
-							let percent = parseInt(e.loaded / e.total * 100);
-							self.Progress.call(self, percent, e.loaded, e.total);
-						}
-
-					} catch { }
-				}
-
-
-
-				/*
-					Success
-				*/
-
-				xhr.onload = function() {
-
-					try {
-
-						if (xhr.status != 200)
-						self.Error.call(xhr, xhr.response);
-
-						if (xhr.status == 200)
-						self.Success.call(xhr, xhr.response);
-
-					} catch { }
-				}
-
-
-				xhr.send(self.data);
-
-			})();
-
-			return xhr;
+			console.log(File.data);
 		}
-
-		return this;
 	}
 }

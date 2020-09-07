@@ -3,6 +3,11 @@
 	src: url("fonts/Helvetica.woff");
 }
 
+@font-face {
+	font-family: "Roboto";
+	src: url("fonts/Roboto.woff");
+}
+
 
 
 html, body {
@@ -19,8 +24,9 @@ html, body {
 * {
 
 	font-family: Helvetica;
-	letter-spacing: 0.5pt;
-	font-size: 17px;
+	letter-spacing: 0.6pt;
+    word-spacing: 0.1em;
+	font-size: 16px;
 	color: #8d9398;
 	user-select: none;
 }
@@ -41,7 +47,7 @@ html, body {
 	border-radius: 3px;
 }
 
-.file_area span {
+.file_area span:first-child {
 
 	height: 48px;
 	text-transform: uppercase;
@@ -53,86 +59,181 @@ html, body {
 	border-bottom: 1px solid #eaeaed;
 }
 
+
+
+
+
+
+
+
+
+
+
 .file {
 
-	position: relative;
-	display: block;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+
 	width: inherit;
-	height: 48px;
-	border-bottom: 1px solid #eaeaed;
+	/* border-bottom: 1px solid #eaeaed; */
+	padding: 6px 16px;
+    box-sizing: border-box;
+
+	position: relative;
+	overflow: hidden;
 }
+
+
+
+
+/*
+	File
+	Extension, Size
+*/
+
+.file span {
+
+	display: flex;
+    align-items: center;
+	padding: 2px 0;
+	transition: margin .3s ease;
+}
+
+.file span::before {
+
+	content: attr(ext);
+
+	border-radius: 5px;
+	margin-right: 6px;
+    padding: 4px 8px;
+
+    font-family: Roboto;
+    font-size: 10px;
+    text-transform: uppercase;
+
+	color: #7d7d7d;
+    background: #ececec;
+}
+
+.file span[ext='pdf']::before {
+	color: #ef4f91;
+    background: #f7e3e8;
+}
+
+.file span[ext='xls']::before,
+.file span[ext='xlsx']::before {
+	color: #20b56a;
+    background: #e8f7f0;
+}
+
+.file span[ext='rtf']::before,
+.file span[ext='doc']::before,
+.file span[ext='docx']::before {
+	color: #2085b5;
+    background: #e8edf7;
+}
+
+.file size {
+
+	font-family: Roboto;
+	font-size: 12px;
+	/* float: right; */
+}
+
+
+
+
 
 .file input {
 
 	outline: none;
-	appearance: none;
-	border: none;
-	background: transparent;
-	color: #606468;
-	padding: 16px 16px 8px 16px;
-    font-size: 15px;
-	/* font-weight: bold; */
-	display: block;
-	width: inherit;
-	transition: padding .4s ease;
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: #606468;
+	padding: 4px 0px 4px 0px;
+    /* margin-bottom: 22px; */
 }
 
-.file input[disabled] {
-	padding-top: 10px;
-	cursor:not-allowed;
-    /* padding-bottom: 8px; */
-}
 
-.file input[disabled] + progress {
-	opacity: 1;
-	/* margin-top: 2px; */
-}
+
+
+
+
 
 
 .file progress {
-	opacity: 0;
-	transition: opacity .4s ease;
+
 	appearance: none;
-	display: block;
-	width: auto;
-	height: 3px;
-	box-sizing: border-box;
-    margin: 0px 16px 0px 16px;
+
+    width: inherit;
+	height: 1px;
+    align-self: center;
+    position: absolute;
+    bottom: 0;
+    transition: margin .3s ease;
 }
 
-.file progress::-webkit-progress-bar {
-	background: #dcdcdc;
-	border-radius: 2px;
-}
-
-.file progress::-webkit-progress-value {
-	background: #60bff7;
-	/* background: #ffcc66; */
-	border-radius: 2px;
-	transition: width 0.5s ease;
-}
-
-
-
-.file::beforeS {
+/* .file[ext]:not([ext=''])::before {
 
 	content: attr(ext);
-    position: absolute;
-    color: #1fa222;
-    background: #bcecbd;
-    border-radius: 12px;
-    padding: 4px 10px;
-    font-size: 14px;
-    right: 0;
-    top: 0;
-    margin: 8px 12px 0px 0px;
+    color: #7d7d7d;
+    background: #ececec;
+	border-radius: 5px;
+    padding: 4px 7px;
+    margin-right: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    align-self: center;
+    font-family: Roboto;
+    text-transform: uppercase;
+}
+
+.file[ext='pdf']::before {
+
+	color: #ef4f91 !important;
+    background: #f7e3e8 !important;
+}
+
+.file[ext='xls']::before,
+.file[ext='xlsx']::before {
+
+	color: #20b56a !important;
+    background: #e8f7f0 !important;
+}
+
+.file[ext='rtf']::before,
+.file[ext='doc']::before,
+.file[ext='docx']::before {
+
+	color: #2085b5 !important;
+    background: #e8edf7 !important;
 }
 
 .file::afterS {
 
 	content: attr(size);
 	font-size: 12px;
-    margin-left: 16px;
+} */
+
+
+
+
+
+
+
+
+.file progress::-webkit-progress-bar {
+	background: #dcdcdc;
+	/* border-radius: 4px; */
+}
+
+.file progress::-webkit-progress-value {
+	background: #60bff7;
+	/* background: #ffcc66; */
+	border-radius: 4px;
+	transition: width 0.5s ease;
 }
 
 
