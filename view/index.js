@@ -1,63 +1,24 @@
 'use strict'
 
 
+setInterval(() => {
 
-function addFile(area) {
+	let s = all('size[byte]');
+	if (s.length) s.each(e => {
 
-	window.files = window.files ?? [];
+		e.innerHTML = size(e.innerHTML);
+		e.removeAttribute('byte');
+	});
 
-
-
-	let form = document.createElement('input');
-	form.type = 'file';
-	form.multiple = true;
-	form.click();
-
-	form.onchange = function() {
+}, 500);
 
 
 
-		// $.File.modified();
-		// $.File.list();
-		// $.File.data();
+function disable() {
 
-		// $.File.add();
+	Array.from(document.querySelectorAll('input'))
+	.forEach(function(e) {
 
-
-
-		let modified = Array.from(window.files)
-		.map(file => file.lastModified);
-
-
-
-		this.files.each(file => {
-
-			if (!modified.includes(file.lastModified)) {
-
-				file.upload = true;
-				window.files.push(file);
-			}
-		});
-
-
-
-		let upload = Array.from(window.files)
-		.filter(file => file.upload == true);
-
-
-
-		let data = [];
-		data.push({
-			id: file.lastModified,
-			name: file.name,
-			size: file.size
-		});
-
-
-		$.Request({ 'file-upload': JSON.stringify(data) })
-		.Success(r => {
-			HTML(area, r);
-			console.log(window.files);
-		});
-	}
+		e.disabled = e.disabled == false;
+	});
 }

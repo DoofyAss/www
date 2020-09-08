@@ -199,65 +199,59 @@ var Request = function() {
 		xhr.Success = function(c) { xhr.Success = c; return this; };
 		xhr.Progress = function(c) { xhr.Progress = c; return this; };
 
-		(async function() {
+
+
+		/*
+			Before
+		*/
+
+		xhr.onloadstart = function() {
+
+			try { xhr.Before.call(xhr, xhr); } catch { }
+		}
 
 
 
-			/*
-				Before Send
-			*/
+		/*
+			Error
+			Success
+		*/
 
-			xhr.onreadystatechange = function() {
+		xhr.onload = function() {
 
-				if (this.readyState == 2)
-				try { this.Before.call(this, this); } catch { }
-			}
+			try {
 
+				if (xhr.status != 200)
+				xhr.Error.call(xhr, xhr.response);
 
+				if (xhr.status == 200)
+				xhr.Success.call(xhr, xhr.response);
 
-			/*
-				Error
-				Success
-			*/
-
-			xhr.onload = function() {
-
-				try {
-
-					if (this.status != 200)
-					this.Error.call(this, this.response);
-
-					if (this.status == 200)
-					this.Success.call(this, this.response);
-
-				} catch { }
-			}
+			} catch { }
+		}
 
 
 
-			/*
-				Progress
-			*/
+		/*
+			Progress
+		*/
 
-			xhr.onprogress = function(e) {
+		xhr.onprogress = function(e) {
 
-				try {
+			try {
 
-					if (this.getResponseHeader('Content-Length')) {
+				if (xhr.getResponseHeader('Content-Length')) {
 
-						let percent = parseInt(e.loaded / e.total * 100);
-						this.Progress.call(this, percent, e.loaded, e.total);
-					}
+					let percent = parseInt(e.loaded / e.total * 100);
+					xhr.Progress.call(xhr, percent, e.loaded, e.total);
+				}
 
-				} catch { }
-			}
+			} catch { }
+		}
 
 
 
-			xhr.send(data);
-
-		})();
-
+		setTimeout(() => xhr.send(data));
 		return xhr;
 	}
 
@@ -289,10 +283,12 @@ var File = {
 	},
 
 
-	
+
 	get data() {
 
-		return File.list.map(file => file.data);
+		return File.list
+		.filter(file => file.data != null)
+		.map(file => file.data);
 	},
 
 
@@ -303,8 +299,6 @@ var File = {
 		form.type = 'file';
 		form.multiple = true;
 		form.click();
-
-
 
 		form.onchange = function() {
 
@@ -325,7 +319,112 @@ var File = {
 				}
 			});
 
-			console.log(File.data);
+
+
+			Request({ 'file-upload': JSON.stringify(File.data) })
+
+			.Success(r => {
+
+				HTML(area, r);
+
+				area.all('[id]').each(e => {
+
+					let index = File.modified.indexOf(parseInt(e.id));
+
+					File.upload( File.list[index] )
+					.Before(xhr => xhr.progressbar = e.parentNode.find('progress'))
+					.Progress((xhr, percent) => xhr.progressbar.value = percent);
+				});
+			});
 		}
+	},
+
+
+
+	upload: function(file) {
+
+		delete file.data;
+
+
+
+		function post(xhr) {
+
+			let form = new FormData();
+			form.append('file', file);
+
+
+
+			xhr.open('POST', window.location.origin);
+
+			xhr.Error = function(c) { xhr.Error = c; return this; };
+			xhr.Before = function(c) { xhr.Before = c; return this; };
+			xhr.Success = function(c) { xhr.Success = c; return this; };
+			xhr.Progress = function(c) { xhr.Progress = c; return this; };
+
+
+
+			/*
+				Before
+			*/
+
+			xhr.onloadstart = function() {
+
+				try { xhr.Before.call(xhr, xhr); } catch { }
+			}
+
+
+
+			/*
+				Error,
+				Abort
+			*/
+
+			xhr.onerror = xhr.onabort = function() {
+
+				try { xhr.Error.call(xhr, xhr); } catch { }
+			}
+
+
+
+			/*
+				Progress
+			*/
+
+			xhr.upload.onprogress = function(e) {
+
+				try {
+
+					let percent = parseInt(e.loaded / e.total * 100);
+					xhr.Progress.call(xhr, xhr, percent, e.loaded, e.total);
+
+				} catch { }
+			}
+
+
+
+			/*
+				Success
+			*/
+
+			xhr.onload = function() {
+
+				try {
+
+					if (this.status != 200)
+					xhr.Error.call(xhr, xhr.response);
+
+					if (this.status == 200)
+					xhr.Success.call(xhr, xhr.response);
+
+				} catch { }
+			}
+
+
+
+			setTimeout(() => xhr.send(form));
+			return xhr;
+		}
+
+		return post(new XMLHttpRequest());
 	}
 }

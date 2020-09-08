@@ -16,15 +16,17 @@
 
 
 
-	/*
-
 	if ($_FILES) {
 
 		$uploadedFile = $_FILES['file']['name'];
 		$tempFile = $_FILES['file']['tmp_name'];
-	}
 
-	*/
+		echo $uploadedFile;
+		echo '<br>';
+		echo $tempFile;
+
+		exit;
+	}
 
 
 
