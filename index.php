@@ -1,6 +1,6 @@
 <?php
 
-	cookie('token', 'qeqqe'); // temp auth
+	// cookie('token', 'qeqqe'); // temp auth
 
 
 

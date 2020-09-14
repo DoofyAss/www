@@ -63,6 +63,24 @@
 
 
 
+		function Authorized() {
+
+			if (!$this->id) {
+
+				http_response_code(401);
+				exit ( 'Unauthorized' );
+			}
+		}
+
+
+
+
+
+
+
+
+
+
 		function Role($array = null) {
 
 			return is_array($array) ?

@@ -1,7 +1,7 @@
 'use strict'
 
 
-setInterval(() => {
+/*setInterval(() => {
 
 	let s = all('size[byte]');
 	if (s.length) s.each(e => {
@@ -22,3 +22,4 @@ function disable() {
 		e.disabled = e.disabled == false;
 	});
 }
+*/

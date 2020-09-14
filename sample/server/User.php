@@ -4,6 +4,9 @@
 		USER
 	*/
 
+	// exit 401 if Unauthorized
+	User()->Authorized();
+
 	// add role
 	User()->addRole(1); // by id
 

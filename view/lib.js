@@ -80,6 +80,12 @@ HTMLElement.prototype.toggleClass = function(s) {
 	this.classList.toggle(s);
 }
 
+HTMLElement.prototype.attr = function(a, v) {
+
+	return typeof v == 'undefined' ? this.getAttribute(a) :
+	v == null ? this.removeAttribute(a) : this.setAttribute(a, v);
+}
+
 HTMLElement.prototype.effect = function(name) {
 
 	this.removeClass(name);
@@ -167,7 +173,7 @@ function timestamp(date) {
 	Request
 */
 
-var Request = function() {
+const Request = function() {
 
 
 
@@ -194,6 +200,7 @@ var Request = function() {
 		xhr.open('POST', window.location.origin);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
+		xhr.Done = function(c) { xhr.Done = c; return this; };
 		xhr.Error = function(c) { xhr.Error = c; return this; };
 		xhr.Before = function(c) { xhr.Before = c; return this; };
 		xhr.Success = function(c) { xhr.Success = c; return this; };
@@ -208,6 +215,18 @@ var Request = function() {
 		xhr.onloadstart = function() {
 
 			try { xhr.Before.call(xhr, xhr); } catch { }
+		}
+
+
+
+		/*
+			Done
+		*/
+
+		xhr.onreadystatechange = function() {
+
+			if (xhr.readyState == xhr.DONE)
+			try { xhr.Done.call(xhr, xhr); } catch { }
 		}
 
 
@@ -271,23 +290,33 @@ var Request = function() {
 	File
 */
 
-var File = {
+const File = {
 
 	list: [],
 
 
 
-	get modified() {
+	index: function(n) {
 
-		return File.list.map(file => file.lastModified);
+		return File.modified.indexOf(parseInt(n));
 	},
 
-
-
-	get data() {
+	get modified() {
 
 		return File.list
-		.filter(file => file.data != null)
+		.map(file => file.lastModified);
+	},
+
+	clearData: function() {
+
+		return File.list
+		.each(file => delete file.data);
+	},
+
+	get Data() {
+
+		return File.list
+		.filter(file => file.data)
 		.map(file => file.data);
 	},
 
@@ -321,29 +350,35 @@ var File = {
 
 
 
-			Request({ 'file-upload': JSON.stringify(File.data) })
-
-			.Success(r => {
-
-				HTML(area, r);
-
-				area.all('[id]').each(e => {
-
-					let index = File.modified.indexOf(parseInt(e.id));
-
-					File.upload( File.list[index] )
-					.Before(xhr => xhr.progressbar = e.parentNode.find('progress'))
-					.Progress((xhr, percent) => xhr.progressbar.value = percent);
-				});
-			});
+			Request({ 'file-upload': JSON.stringify(File.Data) })
+			.Success(response => File.uploadForm(area, response))
+			.Error(() => File.clearData());
 		}
 	},
 
 
 
-	upload: function(file) {
+	uploadForm: function(area, form) {
 
-		delete file.data;
+		HTML(area, form);
+
+		area.all('[id]').each(e => {
+
+			let file = File.list[ File.index(e.id) ];
+
+			if (file.data) {
+
+				delete file.data;
+
+				File.upload(file)
+				.progressbar(e.parentNode.find('progress'));
+			}
+		});
+	},
+
+
+
+	upload: function(file) {
 
 
 
@@ -351,6 +386,7 @@ var File = {
 
 			let form = new FormData();
 			form.append('file', file);
+			form.append('modified', file.lastModified);
 
 
 
@@ -360,6 +396,9 @@ var File = {
 			xhr.Before = function(c) { xhr.Before = c; return this; };
 			xhr.Success = function(c) { xhr.Success = c; return this; };
 			xhr.Progress = function(c) { xhr.Progress = c; return this; };
+
+			xhr.Abort = function(c) { xhr.Abort = c; return this; };
+			xhr.progressbar = function(e) { xhr.progressbar = e; return this; };
 
 
 
@@ -375,13 +414,12 @@ var File = {
 
 
 			/*
-				Error,
 				Abort
 			*/
 
-			xhr.onerror = xhr.onabort = function() {
+			xhr.onabort = function() {
 
-				try { xhr.Error.call(xhr, xhr); } catch { }
+				try { xhr.Abort.call(xhr, xhr); } catch { }
 			}
 
 
@@ -392,10 +430,14 @@ var File = {
 
 			xhr.upload.onprogress = function(e) {
 
+				let percent = parseInt(e.loaded / e.total * 100);
+
+				try { xhr.Progress.call(xhr, percent, e.loaded, e.total); } catch { }
+
 				try {
 
-					let percent = parseInt(e.loaded / e.total * 100);
-					xhr.Progress.call(xhr, xhr, percent, e.loaded, e.total);
+					xhr.progressbar.value = percent;
+					xhr.progressbar.attr('status', 'progress');
 
 				} catch { }
 			}
@@ -408,15 +450,33 @@ var File = {
 
 			xhr.onload = function() {
 
-				try {
 
-					if (this.status != 200)
-					xhr.Error.call(xhr, xhr.response);
 
-					if (this.status == 200)
-					xhr.Success.call(xhr, xhr.response);
+				if (this.status == 200) {
 
-				} catch { }
+					try { xhr.Success.call(xhr, xhr.response); } catch { }
+
+					try {
+
+						xhr.progressbar.value = 100;
+						xhr.progressbar.attr('status', 'done');
+
+					} catch { }
+				}
+
+
+
+				if (this.status != 200) {
+
+					try { xhr.Error.call(xhr, xhr.response); } catch { }
+
+					try {
+
+						xhr.progressbar.value = 100;
+						xhr.progressbar.attr('status', 'error');
+
+					} catch { }
+				}
 			}
 
 

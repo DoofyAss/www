@@ -236,6 +236,14 @@ html, body {
 	transition: width 0.5s ease;
 }
 
+.file progress[error]::-webkit-progress-value {
+	background: #ef4f91;
+}
+
+.file progress[done]::-webkit-progress-value {
+	background: #80ce98;
+}
+
 
 
 

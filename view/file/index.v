@@ -1,5 +1,7 @@
 <link rel='stylesheet' href='view/style.css'>
 
+
+
 <div class='file_area'>
 
 	<span onclick='File.add(this.parentElement)'>добавить файл</span>
