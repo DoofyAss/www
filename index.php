@@ -1,6 +1,6 @@
 <?php
 
-	// cookie('token', 'qeqqe'); // temp auth
+	cookie('token', 'qeqqe'); // temp auth
 
 
 
@@ -42,6 +42,51 @@
 		$v->render();
 
 	});
+
+
+
+
+
+
+
+
+
+
+	/*
+		Content
+	*/
+
+	Request('content')->use('text', 'file')
+	->get(function($data) {
+
+
+
+		//
+
+
+
+		// echo $id = $data->this ? 'update' : 'insert';
+
+		// DB('content')->insert(['text' => $data->text]);
+
+		// global $db;
+		// echo $db->lastInsertId();
+	});
+
+
+
+	function initContent() {
+
+		DB('content')
+			->id()
+			->var('text')
+		->create();
+	}
+
+
+
+
+
 
 	// test
 

@@ -2,6 +2,10 @@
 
 
 
+<div id='1' class='content' contenteditable>qeqqe</div>
+<button onclick='insert()'>save</button>
+
+
 <div class='file_area'>
 
 	<span onclick='File.add(this.parentElement)'>добавить файл</span>

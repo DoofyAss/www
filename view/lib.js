@@ -296,6 +296,15 @@ const File = {
 
 
 
+	onChangeStatus: function() {},
+
+	get uploaded() {
+
+		return File.list.every(file => file.uploaded == true);
+	},
+
+
+
 	index: function(n) {
 
 		return File.modified.indexOf(parseInt(n));
@@ -303,21 +312,12 @@ const File = {
 
 	get modified() {
 
-		return File.list
-		.map(file => file.lastModified);
+		return File.list.map(file => file.lastModified);
 	},
 
-	clearData: function() {
+	get data() {
 
-		return File.list
-		.each(file => delete file.data);
-	},
-
-	get Data() {
-
-		return File.list
-		.filter(file => file.data)
-		.map(file => file.data);
+		return JSON.stringify( File.list.map(file => file.data) );
 	},
 
 
@@ -333,26 +333,32 @@ const File = {
 
 
 
-			this.files.each(file => {
+			let data = [];
+
+			form.files.each(file => {
 
 				if (!File.modified.includes(file.lastModified)) {
 
-					file.data = {
+					data.push(file.data = {
 
 						id: file.lastModified,
 						name: file.name,
 						size: file.size
-					}
-
-					File.list.push(file);
+					});
 				}
 			});
 
+			if (!data.length) return;
 
 
-			Request({ 'file-upload': JSON.stringify(File.Data) })
-			.Success(response => File.uploadForm(area, response))
-			.Error(() => File.clearData());
+
+			Request({ 'file-upload': JSON.stringify(data) })
+			.Success(response => {
+
+				form.files.each(file => File.list.push(file));
+				File.onChangeStatus(File.uploaded);
+				File.uploadForm(area, response);
+			});
 		}
 	},
 
@@ -366,11 +372,9 @@ const File = {
 
 			let file = File.list[ File.index(e.id) ];
 
-			if (file.data) {
+			if (!file.xhr) {
 
-				delete file.data;
-
-				File.upload(file)
+				file.xhr = File.upload(file)
 				.progressbar(e.parentNode.find('progress'));
 			}
 		});
@@ -386,7 +390,7 @@ const File = {
 
 			let form = new FormData();
 			form.append('file', file);
-			form.append('modified', file.lastModified);
+			form.append('id', file.data.id);
 
 
 
@@ -453,6 +457,9 @@ const File = {
 
 
 				if (this.status == 200) {
+
+					file.uploaded = true;
+					File.onChangeStatus(File.uploaded);
 
 					try { xhr.Success.call(xhr, xhr.response); } catch { }
 

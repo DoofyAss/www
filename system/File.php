@@ -33,8 +33,6 @@
 
 
 
-
-
 	if ($_FILES) {
 
 
@@ -44,7 +42,7 @@
 
 
 		$file = (object) $_FILES['file'];
-		$modified = (double) $_POST['modified'];
+		$id = (double) $_POST['id'];
 
 		$max = 1024 * 1024 * min(
 
@@ -62,10 +60,12 @@
 
 			@mkdir($tmp, 0777, true);
 
-			if (!move_uploaded_file($file->tmp_name, $tmp.$modified))
+			if (!move_uploaded_file($file->tmp_name, $tmp.$id))
 			throw new Exception;
 
 		} catch (Exception $e) { NotAcceptable(); }
+
+		sleep(2);
 
 		exit;
 	}
@@ -79,11 +79,11 @@
 
 
 
-	function F($id) {
+	function FS() {
 
-		echo $id;
+		global $FS;
+		return $FS = $FS ?? new FILE();
 	}
-
 
 
 
@@ -97,9 +97,36 @@
 
 
 
+		public $tmp;
+
+
+
 		function __construct() {
 
-			//
+			$this->tmp = DIR. User()->Authorized(). '/tmp/';
+		}
+
+
+
+		function insert($data) {
+
+			$data = [];
+
+			if ($this->inTemporary($name)) {
+
+				DB(file)->insert([
+
+					'path' => $name,
+
+				]);
+			}
+		}
+
+
+
+		function inTemporary($name) {
+
+			return file_exists($this->tmp.$name);
 		}
 
 
@@ -110,9 +137,11 @@
 
 			DB(file)
 				->id()
+				->var('path')
 				->var('name')
-				->var('extension')
+				->var('extension')->null()
 				->int('size')
+				->int('downloads')->null()
 			->create();
 		}
 	}

@@ -23,3 +23,25 @@ function disable() {
 	});
 }
 */
+
+File.onChangeStatus = function(status) {
+
+	find('button').attr('disabled', status ? null : '');
+}
+
+function insert() {
+
+	let content = find('.content');
+
+
+
+	/*Request({
+		content : content.id,
+		text: content.innerHTML,
+		file: JSON.stringify(File.list)
+	});*/
+
+	// File.list.each(f => console.log(f));
+
+	console.dir( File.list );
+}
