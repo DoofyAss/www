@@ -495,3 +495,52 @@ const File = {
 		return post(new XMLHttpRequest());
 	}
 }
+
+
+
+
+
+
+
+
+
+
+/* Tmp */
+
+/* { attribute: 'value' }, { ... } */
+HTMLElement.prototype.toggle = function() {
+
+	let i = Array.from(arguments).map(a => this.hasAttribute(a)).indexOf(true);
+
+	arguments.each(a => this.removeAttribute(a));
+	this.attr(arguments[i + 1] ?? arguments[0], '');
+}
+
+
+
+
+
+
+
+
+
+
+window.addEventListener('click', function() {
+
+	/*
+		options
+	*/
+
+	let trigger = event.target.closest('[options]');
+
+	if (trigger) {
+
+		var options = trigger.find('options');
+		options.toggleClass('enabled');
+
+		if (options)
+		options.onclick = () => event.stopPropagation();
+	}
+
+	all('options').filter(o => o != options).each(o => o.removeClass('enabled'));
+});

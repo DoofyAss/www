@@ -1,4 +1,9 @@
 @font-face {
+	font-family: "HelveticaNeue";
+	src: url("fonts/HelveticaNeue-Light.woff");
+}
+
+@font-face {
 	font-family: "Helvetica";
 	src: url("fonts/Helvetica.woff");
 }
@@ -16,20 +21,300 @@ html, body {
 	height: 100%;
 
 	margin: 0px;
-	background: #eaeaed;
+
+	padding: 8px;
+	box-sizing: border-box;
+	/* background: #e4e7ea; */
+}
+
+html {
+
+	background: linear-gradient(45deg, #d59cbe, #98bcda);
+	/* background: linear-gradient(45deg, #bfcbca, #a8d1cf); */
+	/* background: radial-gradient(at top, #FEFFFF, #A7CECC); */
+
+	/* background: linear-gradient(185deg, #a8d1cf, #d59cbe); */
+    /* background-size: 400% 400%; */
+	/* animation: bodyGradient 60s ease infinite; */
+}
+
+@keyframes bodyGradient {
+	0% { background-position: 48% 0% }
+    50% { background-position: 53% 100% }
+    100% { background-position: 48% 0% }
+}
+
+#body {
+
+	border-radius: 8px;
+	background: #fff;
+	width: 100%;
+	height: 100%;
+	position: relative;
+    display: inline-grid;
+	overflow: hidden;
+
+	box-shadow: 0px 0px 0px 6px rgba(255, 0255, 255, .3);
+	/* animation: bodyShadow 3s ease infinite; */
+	/* animation-direction: alternate-reverse; */
+}
+
+@keyframes bodyShadow {
+	0% { box-shadow: 0px 0px 0px 4px rgba(255, 0255, 255, .6); }
+    100% { box-shadow: 0px 0px 0px 9px rgba(255, 0255, 255, .3); }
+}
+
+#scroll {
+
+	/* header height */
+	margin-top: 80px;
+
+	/* scrollbar */
+	-webkit-background-clip: text;
+	background-color: rgba(0, 0, 0, 0);
+	overflow-y: scroll;
+	transition: background-color .3s ease;
+}
+
+#scroll:hover {
+
+	background-color: #b9b9b9;
+}
+
+#scroll::-webkit-scrollbar {
+
+	width: 12px;
+}
+
+#scroll::-webkit-scrollbar-button {
+
+	border-radius: 12px;
+    border: 4px solid transparent;
+    background-clip: padding-box;
+}
+
+#scroll::-webkit-scrollbar-thumb {
+
+	background-color: inherit;
+    border-radius: 16px;
+    border: 4px solid transparent;
+    background-clip: padding-box;
+}
+
+#content {
+
+	padding: 12px 0 12px 12px;
+	font-size: 21px;
+	background: #fff;
+}
+
+#content b {
+
+	font-size: 21px;
 }
 
 
 
 * {
 
-	font-family: Helvetica;
+	font-family: HelveticaNeue;
 	letter-spacing: 0.6pt;
-    word-spacing: 0.1em;
+    word-spacing: 0.3em;
 	font-size: 16px;
-	color: #8d9398;
+	color: #58697d;
 	user-select: none;
 }
+
+
+
+
+
+
+
+
+/*
+	Header
+*/
+
+#header {
+
+	display: flex;
+	align-items: center;
+
+	width: 100%;
+	height: 80px;
+	box-shadow: 0 8px 24px -24px #000;
+    /* background: #cad2da; */
+	position: absolute;
+}
+
+input {
+
+	border: none;
+	outline: none;
+}
+
+#search {
+
+	background: #fff;
+    padding: 16px 32px;
+    border-radius: 32px;
+
+    font-size: 20px;
+	/* font-weight: bold; */
+	color: #313131;
+
+    width: 512px;
+    height: 48px;
+
+    margin: 0 24px;
+}
+
+account {
+
+	display: flex;
+    align-items: center;
+	margin-left: auto;
+	/* margin-right: 24px; */
+	padding: 0 36px;
+
+	/* position: relative; */
+	height: inherit;
+
+	cursor: pointer;
+}
+
+account name {
+
+	font-size: 16px;
+    margin-right: 16px;
+}
+
+account avatar {
+
+	background: #cde1f3;
+    width: 48px;
+    height: 48px;
+	border-radius: 100%;
+
+	overflow: hidden;
+
+	display: flex;
+    align-items: center;
+	justify-content: center;
+}
+
+account avatar img {
+
+	width: 48px;
+}
+
+#search::placeholder {
+
+	color: #9097a4;
+}
+
+
+
+
+/*
+	Options
+*/
+
+options {
+
+	position: absolute;
+	min-width: 192px;
+	padding: 6px 0;
+	border: 1px solid rgba(0, 0, 0, .2);
+	border-radius: 6px;
+	background: #fff;
+	box-shadow: 0px 1px 4px 1px rgba(0, 0, 0, .1);
+
+	right: 0;
+    top: 100%;
+
+	visibility: hidden;
+	opacity: 0;
+	margin-top: 12px;
+
+	transition: visibility .2s linear, opacity .2s linear, margin .3s ease;
+}
+
+options.enabled {
+
+	visibility: visible;
+	opacity: 1;
+	margin-top: 0px;
+}
+
+options::before {
+
+	content: '';
+    width: 12px;
+    height: 12px;
+    display: block;
+
+	border: 1px solid rgba(0, 0, 0, .2);
+	border-bottom-color: transparent;
+    border-right-color: transparent;
+	border-radius: 2px 0 100% 0;
+
+    transform: rotate(45deg);
+    position: absolute;
+	top: -8px;
+    right: 24px;
+	background: #fff;
+	z-index: 0;
+}
+
+options item {
+
+	display: block;
+	background: #fff;
+	padding: 0 16px;
+	line-height: 36px;
+	color: #777;
+	cursor: pointer;
+
+	font-family: Roboto;
+	font-size: 14px;
+
+	position: relative;
+	z-index: 1;
+}
+
+options div {
+
+	display: block;
+	height: 1px;
+    margin: 6px 0;
+    background: rgba(0, 0, 0, .1);
+}
+
+options item:hover {
+
+	background: #eaf1f7;
+}
+
+options.account {
+
+    right: 26px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*

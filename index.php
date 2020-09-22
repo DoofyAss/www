@@ -12,7 +12,13 @@
 
 	Route()->get(function() {
 
-		view('file/')->render();
+		// view('file/')->render();
+
+		// $v = view();
+		// $v->user = User();
+		// $v->render();
+
+		view()->render();
 	});
 
 
